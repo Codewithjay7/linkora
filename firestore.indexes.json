@@ -1,0 +1,15 @@
+{
+  "//": "Composite indexes for Linkora. Firestore creates single-field indexes automatically, so only multi-field queries are listed here. Deploy with: firebase deploy --only firestore:indexes",
+  "indexes": [
+    {
+      "//": "Needed by subscribeToUserPosts() in src/services/posts.service.ts, which filters by authorId and sorts by createdAt. Without this index the profile screens fail with a 'failed-precondition' error.",
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "authorId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

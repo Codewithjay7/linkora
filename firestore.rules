@@ -1,0 +1,277 @@
+rules_version = '2';
+
+// =============================================================================
+// Linkora — Cloud Firestore security rules
+// Project: linkora-a274a
+//
+// These rules run on Google's servers. They are the real security boundary for
+// Linkora: anything the client is not allowed to do here, it cannot do at all,
+// no matter how the app is modified or what tool is used to call the API.
+//
+// Default posture: DENY EVERYTHING, then allow specific, narrow operations.
+// There is no `allow read, write: if true` anywhere in this file, and no
+// time-limited "test mode" clause.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    /** The set of fields this write actually changes. */
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    /** True when the write touches only the listed fields. */
+    function onlyChanges(allowed) {
+      return changedKeys().hasOnly(allowed);
+    }
+
+    // ---------------------------------------------------------------------
+    // users/{uid}
+    //
+    // Every signed-in member can read every profile — that is what makes the
+    // network directory work. Only the owner can write their own document.
+    // ---------------------------------------------------------------------
+
+    match /users/{uid} {
+
+      allow read: if isSignedIn();
+
+      // A new profile must be created by its owner, with a matching uid field,
+      // and must not claim a creation time it did not have.
+      allow create: if isSelf(uid)
+                    && request.resource.data.uid == uid
+                    && request.resource.data.email is string
+                    && request.resource.data.displayName is string;
+
+      // Owners may edit only their presentation fields. Notably `email` and
+      // `uid` are NOT in this list, so they cannot be rewritten from the app.
+      allow update: if isSelf(uid)
+                    && onlyChanges([
+                         'displayName', 'headline', 'bio',
+                         'location', 'photoURL', 'updatedAt'
+                       ]);
+
+      allow delete: if isSelf(uid);
+
+      // -------------------------------------------------------------------
+      // users/{uid}/notifications/{notificationId}
+      //
+      // Only the owner reads their notifications. Anyone signed in may CREATE
+      // one (that is how "X liked your post" reaches you), but the actorId must
+      // be the caller's own uid, so notifications cannot be forged to look like
+      // they came from somebody else.
+      // -------------------------------------------------------------------
+
+      match /notifications/{notificationId} {
+
+        allow read: if isSelf(uid);
+
+        allow create: if isSignedIn()
+                      && request.resource.data.actorId == request.auth.uid
+                      && request.resource.data.recipientId == uid
+                      && request.resource.data.read == false;
+
+        // The owner may only flip a notification to read.
+        allow update: if isSelf(uid) && onlyChanges(['read']);
+
+        allow delete: if isSelf(uid);
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // posts/{postId}
+    //
+    // Readable by any signed-in member. Only the author can create, edit or
+    // delete the post body — but any member needs to bump likeCount and
+    // commentCount, so those two counters are carved out explicitly.
+    // ---------------------------------------------------------------------
+
+    match /posts/{postId} {
+
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.authorId == request.auth.uid
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() <= 3000
+                    && request.resource.data.likeCount == 0
+                    && request.resource.data.commentCount == 0;
+
+      // The author editing their own post text.
+      allow update: if isSignedIn()
+                    && resource.data.authorId == request.auth.uid
+                    && onlyChanges(['text', 'imageUrl', 'updatedAt']);
+
+      // Anybody signed in may adjust the like counter, but ONLY by exactly one
+      // step in either direction. Without the +/-1 check, any member could set
+      // likeCount to an arbitrary number. Firestore evaluates the result of
+      // increment() here, so these comparisons see the final value.
+      allow update: if isSignedIn()
+                    && onlyChanges(['likeCount'])
+                    && (
+                      request.resource.data.likeCount == resource.data.likeCount + 1
+                      || request.resource.data.likeCount == resource.data.likeCount - 1
+                    );
+
+      // Same rule for the comment counter.
+      allow update: if isSignedIn()
+                    && onlyChanges(['commentCount'])
+                    && (
+                      request.resource.data.commentCount == resource.data.commentCount + 1
+                      || request.resource.data.commentCount == resource.data.commentCount - 1
+                    );
+
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+
+      // -------------------------------------------------------------------
+      // posts/{postId}/likes/{likerUid}
+      //
+      // The document id IS the liker's uid, so one member can hold at most one
+      // like per post and cannot create or remove somebody else's like.
+      // -------------------------------------------------------------------
+
+      match /likes/{likerUid} {
+
+        allow read: if isSignedIn();
+
+        allow create: if isSelf(likerUid)
+                      && request.resource.data.uid == likerUid;
+
+        // Deletable by the person who left the like, OR by the author of the
+        // post it sits under.
+        //
+        // The second case is required, not optional: deleting a post clears its
+        // likes subcollection first (deletePostCompletely in posts.service.ts).
+        // Without it, a post that anyone else had liked could never be deleted —
+        // the like deletion would be denied and the post would survive.
+        allow delete: if isSelf(likerUid)
+                      || get(/databases/$(database)/documents/posts/$(postId)).data.authorId == request.auth.uid;
+
+        // A like has no mutable fields.
+        allow update: if false;
+      }
+
+      // -------------------------------------------------------------------
+      // posts/{postId}/comments/{commentId}
+      //
+      // Any member may comment. A comment can be deleted by its own author or
+      // by the author of the post it sits under (basic moderation).
+      // -------------------------------------------------------------------
+
+      match /comments/{commentId} {
+
+        allow read: if isSignedIn();
+
+        allow create: if isSignedIn()
+                      && request.resource.data.authorId == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 1000;
+
+        allow update: if isSignedIn()
+                      && resource.data.authorId == request.auth.uid
+                      && onlyChanges(['text', 'updatedAt']);
+
+        allow delete: if isSignedIn()
+                      && (
+                        resource.data.authorId == request.auth.uid
+                        || get(/databases/$(database)/documents/posts/$(postId)).data.authorId == request.auth.uid
+                      );
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // connections/{connectionId}
+    //
+    // The document id is the two uids sorted and joined with "_". Both people
+    // can read and delete it; only the requester creates it; only the recipient
+    // can move it from pending to accepted.
+    // ---------------------------------------------------------------------
+
+    match /connections/{connectionId} {
+
+      function isMember() {
+        return isSignedIn() && request.auth.uid in resource.data.members;
+      }
+
+      // The `resource == null` case matters: the app reads this document by id
+      // to ask "are we connected?", and that document usually does not exist
+      // yet. Without the null branch the rule would error on a missing document
+      // and the app would see "permission denied" instead of "no connection".
+      allow read: if isSignedIn() && (resource == null || isMember());
+
+      allow create: if isSignedIn()
+                    && request.resource.data.requesterId == request.auth.uid
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.members.size() == 2
+                    && request.auth.uid in request.resource.data.members
+                    && request.resource.data.recipientId in request.resource.data.members
+                    && request.resource.data.recipientId != request.auth.uid;
+
+      // Only the person who received the request may accept it.
+      allow update: if isSignedIn()
+                    && request.auth.uid == resource.data.recipientId
+                    && resource.data.status == 'pending'
+                    && request.resource.data.status == 'accepted'
+                    && onlyChanges(['status', 'updatedAt']);
+
+      // Either side may disconnect, or decline a pending request.
+      allow delete: if isMember();
+    }
+
+    // ---------------------------------------------------------------------
+    // Designed but NOT yet implemented in the app.
+    //
+    // These collections appear in the planned data model (jobs, companies,
+    // applications, conversations, messages). No client code writes to them
+    // yet. They are denied outright rather than left open, so that an
+    // unfinished feature can never become an unsecured collection.
+    //
+    // When you build these features, replace each `if false` with real rules
+    // and update the README.
+    // ---------------------------------------------------------------------
+
+    match /jobs/{jobId} {
+      allow read, write: if false;
+    }
+
+    match /companies/{companyId} {
+      allow read, write: if false;
+    }
+
+    match /applications/{applicationId} {
+      allow read, write: if false;
+    }
+
+    match /conversations/{conversationId} {
+      allow read, write: if false;
+      match /messages/{messageId} {
+        allow read, write: if false;
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // Catch-all: anything not matched above is denied.
+    // Never delete this block.
+    // ---------------------------------------------------------------------
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

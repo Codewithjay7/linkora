@@ -1,0 +1,2059 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linkora — Developer Code Guide</title>
+<style>
+:root{
+  --bg:#f4f2ee; --surface:#fff; --surface-2:#faf9f7; --border:#e3e1dd;
+  --text:#1d1d1b; --muted:#5e5e5c; --primary:#0a66c2; --primary-soft:#e8f1fa;
+  --code-bg:#1e2430; --code-text:#e6edf3; --ok:#0e7c3a; --warn:#b45309; --bad:#b42318;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+}
+html[data-theme="dark"]{
+  --bg:#0f1216; --surface:#161b22; --surface-2:#1b212a; --border:#2a323d;
+  --text:#e6edf3; --muted:#9aa4b2; --primary:#58a6ff; --primary-soft:#132133;
+  --code-bg:#0b0f14; --code-text:#e6edf3; --ok:#3fb950; --warn:#d29922; --bad:#f85149;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+code,pre{font-family:ui-monospace,SFMono-Regular,"SF Mono",Consolas,"Liberation Mono",Menlo,monospace}
+
+/* ---------- Layout ---------- */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:270px;flex:0 0 270px;background:var(--surface);border-right:1px solid var(--border);
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:18px 0}
+.main{flex:1;min-width:0;padding:28px 34px 90px;max-width:1000px}
+@media(max-width:900px){
+  .layout{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto;flex:none;border-right:none;border-bottom:1px solid var(--border)}
+  .main{padding:20px 16px 60px}
+}
+
+/* ---------- Sidebar ---------- */
+.brand{padding:0 18px 14px;display:flex;align-items:center;gap:10px}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:var(--primary);color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.brand-name{font-weight:800;font-size:17px;letter-spacing:-.2px}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:-2px}
+.searchwrap{padding:0 14px 12px}
+#search{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;
+  background:var(--surface-2);color:var(--text);font-size:13px}
+#search:focus{outline:2px solid var(--primary);outline-offset:-1px}
+.searchnote{font-size:11px;color:var(--muted);padding:0 14px 10px}
+nav a{display:block;padding:6px 18px;color:var(--muted);text-decoration:none;font-size:13.5px;
+  border-left:3px solid transparent}
+nav a:hover{color:var(--text);background:var(--surface-2)}
+nav a.active{color:var(--primary);border-left-color:var(--primary);background:var(--primary-soft);font-weight:600}
+nav .navgroup{padding:14px 18px 5px;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
+  color:var(--muted);font-weight:700}
+
+/* ---------- Content ---------- */
+h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.5px}
+h2{font-size:22px;margin:44px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--border);letter-spacing:-.3px}
+h3{font-size:17px;margin:26px 0 8px}
+h4{font-size:14.5px;margin:18px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+p{margin:10px 0}
+a{color:var(--primary)}
+.lede{font-size:16px;color:var(--muted);margin-bottom:22px}
+section{scroll-margin-top:20px}
+
+/* ---------- Cards / callouts ---------- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;margin:16px 0;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:16px 0}
+.note{border-left:4px solid var(--primary);background:var(--primary-soft);
+  padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+.warn{border-left:4px solid var(--warn);background:color-mix(in srgb,var(--warn) 9%,transparent);
+  padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+.bad{border-left:4px solid var(--bad);background:color-mix(in srgb,var(--bad) 9%,transparent);
+  padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+
+/* ---------- Badges ---------- */
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;
+  letter-spacing:.02em;vertical-align:middle}
+.b-ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.b-no{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.b-dead{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+
+/* ---------- Code ---------- */
+.codewrap{position:relative;margin:14px 0}
+.codehead{display:flex;justify-content:space-between;align-items:center;
+  background:var(--surface-2);border:1px solid var(--border);border-bottom:none;
+  border-radius:9px 9px 0 0;padding:7px 12px;font-size:12px;color:var(--muted)}
+.codepath{font-family:ui-monospace,Consolas,monospace;font-weight:600}
+.copybtn{background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:600}
+.copybtn:hover{color:var(--primary);border-color:var(--primary)}
+.copybtn.done{color:var(--ok);border-color:var(--ok)}
+pre{background:var(--code-bg);color:var(--code-text);padding:14px 16px;margin:0;
+  border-radius:0 0 9px 9px;overflow-x:auto;font-size:12.8px;line-height:1.6}
+pre.solo{border-radius:9px}
+code:not(pre code){background:var(--surface-2);border:1px solid var(--border);
+  padding:1px 5px;border-radius:4px;font-size:12.5px}
+/* tiny syntax highlight */
+.k{color:#ff7b72}.s{color:#a5d6ff}.c{color:#8b949e;font-style:italic}
+.f{color:#d2a8ff}.n{color:#79c0ff}
+html[data-theme="light"] .k{color:#cf222e}
+html[data-theme="light"] .s{color:#0a3069}
+html[data-theme="light"] .c{color:#6e7781}
+html[data-theme="light"] .f{color:#8250df}
+html[data-theme="light"] .n{color:#0550ae}
+
+/* ---------- Tables ---------- */
+.tablewrap{overflow-x:auto;margin:14px 0;border:1px solid var(--border);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-weight:700;font-size:12px;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+
+/* ---------- Diagrams ---------- */
+.diagram{background:var(--code-bg);color:var(--code-text);padding:16px 18px;border-radius:10px;
+  overflow-x:auto;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.55;
+  white-space:pre;margin:14px 0}
+
+/* ---------- Collapsible ---------- */
+details{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  margin:10px 0;overflow:hidden}
+details[open]{box-shadow:var(--shadow)}
+summary{cursor:pointer;padding:13px 17px;font-weight:600;font-size:14.5px;list-style:none;
+  display:flex;align-items:center;gap:9px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--primary);font-size:13px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+summary:hover{background:var(--surface-2)}
+.dbody{padding:0 17px 15px;border-top:1px solid var(--border)}
+
+/* ---------- Q&A ---------- */
+.qa .qlabel{font-size:10.5px;font-weight:800;letter-spacing:.09em;color:var(--primary);
+  text-transform:uppercase;margin-top:12px}
+.qa .short{font-size:14.5px}
+
+/* ---------- Topbar ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;
+  flex-wrap:wrap}
+.themebtn{background:var(--surface);border:1px solid var(--border);color:var(--text);
+  border-radius:8px;padding:7px 13px;cursor:pointer;font-size:13px;font-weight:600}
+.themebtn:hover{border-color:var(--primary);color:var(--primary)}
+.meta{font-size:12px;color:var(--muted)}
+.nohit{display:none;padding:22px;text-align:center;color:var(--muted)}
+mark{background:color-mix(in srgb,var(--primary) 28%,transparent);color:inherit;
+  padding:0 2px;border-radius:3px}
+ul,ol{padding-left:22px}
+li{margin:5px 0}
+.filetree{font-family:ui-monospace,Consolas,monospace;font-size:12.6px;line-height:1.7;white-space:pre}
+
+/* ---------- Mockup gallery ---------- */
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:22px;margin:20px 0}
+.shots figure{margin:0;text-align:center}
+.shots img{width:100%;max-width:215px;height:auto;border-radius:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.10),0 14px 30px rgba(0,0,0,.08)}
+html[data-theme="dark"] .shots img{box-shadow:0 2px 6px rgba(0,0,0,.5),0 14px 30px rgba(0,0,0,.4)}
+.shots figcaption{margin-top:10px;font-size:13px;font-weight:700;color:var(--text)}
+.shots figcaption span{display:block;margin-top:3px;font-weight:400;font-size:11px;
+  color:var(--muted);font-family:ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">L</div>
+    <div>
+      <div class="brand-name">Linkora</div>
+      <div class="brand-sub">Developer Code Guide</div>
+    </div>
+  </div>
+  <div class="searchwrap">
+    <input id="search" type="search" placeholder="Search: firebase, login, posts…" autocomplete="off">
+  </div>
+  <div class="searchnote" id="searchnote">Type to filter every section.</div>
+  <nav id="nav">
+    <div class="navgroup">Start here</div>
+    <a href="#overview">Project overview</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#folders">Folder structure</a>
+    <a href="#screens">What it looks like</a>
+    <div class="navgroup">The code</div>
+    <a href="#files">File-by-file</a>
+    <a href="#firebase">Firebase connection</a>
+    <a href="#auth">Authentication</a>
+    <a href="#firestore">Firestore database</a>
+    <a href="#storage">Storage &amp; images</a>
+    <a href="#posts">Posts, likes, comments</a>
+    <a href="#network">Connections</a>
+    <a href="#notifications">Notifications</a>
+    <a href="#navigation">Navigation</a>
+    <div class="navgroup">Deeper</div>
+    <a href="#security">Security rules</a>
+    <a href="#dataflow">Data flow diagrams</a>
+    <a href="#concepts">React Native concepts</a>
+    <div class="navgroup">Revision</div>
+    <a href="#howworks">How does this work?</a>
+    <a href="#sirasked">Sir asked me</a>
+    <a href="#notimpl">Not implemented</a>
+    <a href="#trouble">Troubleshooting</a>
+  </nav>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Linkora — Developer Code Guide</h1>
+      <div class="meta">Generated from the actual source in <code>C:\Users\IT\Documents\Linkora</code> ·
+      Expo SDK 57.0.20 · React Native 0.86.3 · Firebase JS SDK 12.18.0</div>
+    </div>
+    <button class="themebtn" id="themebtn" type="button">🌙 Dark</button>
+  </div>
+
+  <p class="lede">Everything here is taken from code that exists in this project. Features with no
+  code are marked <span class="badge b-no">NOT IMPLEMENTED</span> rather than described.</p>
+
+  <div class="nohit" id="nohit">No section matches that search.</div>
+
+<!-- ================= OVERVIEW ================= -->
+<section id="overview">
+<h2>A. Project overview</h2>
+
+<h3>What Linkora is</h3>
+<p>Linkora is a professional-networking mobile app. A user registers with an email and password,
+fills in a profile, posts updates, likes and comments on other people's posts, and sends connection
+requests. It runs on Android and iOS from one codebase.</p>
+
+<h3>Why React Native</h3>
+<ul>
+<li><b>One codebase, two platforms.</b> The same TypeScript runs on Android and iOS.</li>
+<li><b>Real native UI.</b> React Native renders actual platform widgets, not a web page in a wrapper.</li>
+<li><b>Expo removes the setup barrier.</b> With Expo you run the app on a real phone through the
+Expo Go app — no Android Studio, no Xcode, no JDK. That matters here: <b>this development machine
+has no Java and no Android SDK installed</b>, and the app still runs.</li>
+</ul>
+
+<h3>Why Firebase</h3>
+<ul>
+<li><b>No server to write or host.</b> Linkora has no Node/Express backend. The app talks straight
+to Google's services over HTTPS.</li>
+<li><b>Authentication is solved.</b> Passwords are hashed and stored by Google. Linkora never sees
+or stores a password.</li>
+<li><b>Realtime by default.</b> Firestore listeners push changes to the app, so the feed updates
+without a refresh button.</li>
+<li><b>Security lives on the server.</b> Firestore rules run on Google's machines, so they cannot
+be bypassed by editing the app.</li>
+</ul>
+
+<h3>How the frontend and backend communicate</h3>
+<p>There is no REST API and no custom endpoint. Screens call functions in
+<code>src/services/</code>; those functions call the Firebase SDK; the SDK makes the HTTPS request.
+The single file that opens any connection is <code>src/firebase/app.ts</code>.</p>
+
+<div class="diagram">User
+ ↓
+React Native UI              src/screens/ , src/components/
+ ↓
+Navigation                   src/navigation/
+ ↓
+Context / Services           src/context/AuthContext.tsx , src/services/*.service.ts
+ ↓
+Firebase SDK                 src/firebase/app.ts     ← the ONLY network entry point
+ ↓
+Firebase Auth · Firestore · Storage
+ ↓
+Firebase project: linkora-a274a</div>
+
+<div class="note"><b>The one rule that makes this codebase auditable:</b> no screen and no component
+imports the Firebase SDK directly. They import functions from <code>src/services/</code>. Those
+services import <code>auth</code>, <code>db</code> and <code>storage</code> from
+<code>src/firebase/app.ts</code>. So to see every network destination the app can reach, you read
+one file.</p></div>
+</section>
+
+<!-- ================= ARCHITECTURE ================= -->
+<section id="architecture">
+<h2>Architecture in layers</h2>
+
+<div class="tablewrap"><table>
+<tr><th>Layer</th><th>Folder</th><th>Job</th><th>May import</th></tr>
+<tr><td>UI</td><td><code>src/components/</code></td><td>Dumb, reusable pieces (Button, Avatar, PostCard)</td><td>theme, utils, types</td></tr>
+<tr><td>Screens</td><td><code>src/screens/</code></td><td>One screen each; holds screen state</td><td>services, context, components</td></tr>
+<tr><td>Navigation</td><td><code>src/navigation/</code></td><td>Which screen shows when</td><td>screens, context</td></tr>
+<tr><td>State</td><td><code>src/context/</code></td><td>Current user + profile, app-wide</td><td>services</td></tr>
+<tr><td>Data</td><td><code>src/services/</code></td><td>All reads and writes</td><td><code>src/firebase/app.ts</code></td></tr>
+<tr><td>Connection</td><td><code>src/firebase/</code></td><td>Starts Firebase. <b>Only network entry point.</b></td><td>config</td></tr>
+<tr><td>Config</td><td><code>src/config/</code></td><td>Reads <code>.env</code>, validates, blocks wrong project</td><td>—</td></tr>
+</table></div>
+
+<p>Dependencies point downward only. A service never imports a screen. That is what keeps the data
+layer testable and the network surface small.</p>
+</section>
+
+<!-- ================= FOLDERS ================= -->
+<section id="folders">
+<h2>B. Complete folder guide</h2>
+
+<div class="card">
+<div class="filetree">Linkora/
+├── App.tsx                  Entry: providers + navigator
+├── index.ts                 Registers App.tsx with React Native
+├── app.json                 Expo config (name, icons, permissions)
+├── package.json             Dependencies + npm scripts
+├── tsconfig.json            TypeScript settings
+├── .env.example             Env template (committed)
+├── .env                     Real values (NOT committed — you create it)
+├── .gitignore               Blocks secrets from Git
+├── firebase.json            Points Firebase CLI at the rule files
+├── firestore.rules          Firestore security rules
+├── firestore.indexes.json   Composite index definition
+├── storage.rules            Storage security rules
+├── assets/                  Icons and splash image
+└── src/
+    ├── components/          6 reusable UI pieces
+    ├── config/              env.ts
+    ├── context/             AuthContext.tsx
+    ├── firebase/            app.ts
+    ├── navigation/          4 files
+    ├── screens/             10 screens (2 under auth/)
+    ├── services/            7 service files
+    ├── theme/               colours, spacing, font sizes
+    ├── types/               shared Firestore document types
+    └── utils/               errors.ts, format.ts</div>
+</div>
+
+<div class="warn"><b>Folders that do NOT exist</b> (you will see them in tutorials, but documenting
+them here would be wrong):
+<ul>
+<li><code>src/hooks/</code> — the only hook, <code>useAuth</code>, is exported from
+<code>src/context/AuthContext.tsx</code>.</li>
+<li><code>android/</code> and <code>ios/</code> — Expo generates these only if you run
+<code>npx expo prebuild</code>. Not needed.</li>
+<li><code>__tests__/</code> — there is no test runner configured.</li>
+</ul></div>
+
+<h3>What each folder is for</h3>
+
+<details open><summary><code>src/firebase/</code> — the connection</summary>
+<div class="dbody">
+<p><b>Contains:</b> <code>app.ts</code> only.</p>
+<p><b>Why it exists:</b> to give the whole app exactly one place where a backend connection is
+created. Everything else imports <code>auth</code>, <code>db</code>, <code>storage</code> from here.</p>
+<p><b>Depended on by:</b> all seven service files. Nothing else.</p>
+</div></details>
+
+<details><summary><code>src/services/</code> — all data access</summary>
+<div class="dbody">
+<p><b>Contains:</b> <code>auth.service.ts</code>, <code>users.service.ts</code>,
+<code>posts.service.ts</code>, <code>comments.service.ts</code>, <code>connections.service.ts</code>,
+<code>notifications.service.ts</code>, <code>storage.service.ts</code>.</p>
+<p><b>Why it exists:</b> screens should describe <i>what</i> they want, not <i>how</i> Firestore
+works. If the database changed, only this folder would change.</p>
+<p><b>Depends on:</b> <code>src/firebase/app.ts</code>, <code>src/types/</code>.
+<b>Used by:</b> screens and <code>AuthContext</code>.</p>
+</div></details>
+
+<details><summary><code>src/screens/</code> — one file per screen</summary>
+<div class="dbody">
+<p>10 screens. <code>auth/LoginScreen.tsx</code> and <code>auth/RegisterScreen.tsx</code> are shown
+when signed out; the other eight when signed in.</p>
+<p>Screens hold their own loading/error state and call services. They never touch Firestore directly.</p>
+</div></details>
+
+<details><summary><code>src/navigation/</code> — routing</summary>
+<div class="dbody">
+<p><code>RootNavigator.tsx</code> chooses between signed-out and signed-in.
+<code>AuthNavigator.tsx</code> is the login stack. <code>MainTabs.tsx</code> is the four bottom tabs.
+<code>types.ts</code> types every route name and its parameters so a typo is a compile error.</p>
+</div></details>
+
+<details><summary><code>src/context/</code> — app-wide state</summary>
+<div class="dbody">
+<p><code>AuthContext.tsx</code> holds the Firebase Auth user <i>and</i> the Firestore profile, and
+exports the <code>useAuth()</code> hook. Nearly every signed-in screen calls it.</p>
+</div></details>
+
+<details><summary><code>src/config/</code>, <code>src/types/</code>, <code>src/utils/</code>, <code>src/theme/</code></summary>
+<div class="dbody">
+<ul>
+<li><code>config/env.ts</code> — reads <code>.env</code>, validates it, and refuses to start on the
+wrong Firebase project.</li>
+<li><code>types/index.ts</code> — TypeScript shapes mirroring the Firestore documents, plus the
+<code>connectionIdFor()</code> helper.</li>
+<li><code>utils/errors.ts</code> — maps Firebase error codes to readable sentences.
+<code>utils/format.ts</code> — <code>timeAgo()</code>, <code>initials()</code>,
+<code>looksLikeEmail()</code>.</li>
+<li><code>theme/index.ts</code> — colours, spacing, radius, font sizes.</li>
+</ul>
+</div></details>
+</section>
+
+<!-- ================= SCREENS ================= -->
+<section id="screens">
+<h2>What it looks like — screen to file</h2>
+
+<h3>Real screenshots — the app actually running</h3>
+<p>These two are <b>genuine screenshots</b>, captured from the web build with a temporary throwaway
+Firebase config. The jump from Login to Register was done by an automated click, and the browser
+console reported <b>zero errors</b>.</p>
+
+<div class="shots">
+  <figure><img src="screenshots/01-login-real.png" alt="Real Login screenshot">
+    <figcaption>Login — real<span>screens/auth/LoginScreen.tsx</span></figcaption></figure>
+  <figure><img src="screenshots/02-register-real.png" alt="Real Register screenshot">
+    <figcaption>Register — real<span>screens/auth/RegisterScreen.tsx</span></figcaption></figure>
+</div>
+
+<div class="note"><b>What this proves:</b> the app boots, the config guard passes, Firebase
+initialises, <code>AuthContext</code> resolves, React Navigation works, and both auth screens render.
+<b>What it does not prove:</b> real sign-in or any Firestore read/write — those need your real
+Firebase keys. It is also the <i>web</i> render; a phone uses the same components with native
+spacing.</div>
+
+<h3>Mockups — the remaining screens</h3>
+<div class="warn"><b>These are mockups, not screenshots.</b> The signed-in screens need a real
+account, so they could not be captured. Each image is drawn from the real values in
+<code>src/theme/index.ts</code> and each screen's <code>StyleSheet</code>, so the colours, spacing
+and button text match the code. Replace them with real screenshots once you run the app.</div>
+
+<p>Use this section to connect what you see on the phone to the file that draws it — that is usually
+the first thing you need when a question starts with "show me where…".</p>
+
+<div class="shots">
+  <figure><img src="mockups/01-login.svg" alt="Login screen mockup">
+    <figcaption>Login<span>screens/auth/LoginScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/02-register.svg" alt="Register screen mockup">
+    <figcaption>Register<span>screens/auth/RegisterScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/03-home-feed.svg" alt="Home feed mockup">
+    <figcaption>Home feed<span>screens/HomeScreen.tsx + PostCard.tsx</span></figcaption></figure>
+  <figure><img src="mockups/04-post-detail.svg" alt="Post detail mockup">
+    <figcaption>Post &amp; comments<span>screens/PostDetailScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/05-network.svg" alt="Network screen mockup">
+    <figcaption>My network<span>screens/NetworkScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/06-notifications.svg" alt="Notifications mockup">
+    <figcaption>Notifications<span>screens/NotificationsScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/07-profile.svg" alt="Profile mockup">
+    <figcaption>Profile<span>screens/ProfileScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/08-create-post.svg" alt="Create post mockup">
+    <figcaption>Create post<span>screens/CreatePostScreen.tsx</span></figcaption></figure>
+  <figure><img src="mockups/09-settings.svg" alt="Settings mockup">
+    <figcaption>Settings<span>screens/SettingsScreen.tsx</span></figcaption></figure>
+</div>
+
+<h3>Which service feeds which screen</h3>
+<div class="tablewrap"><table>
+<tr><th>Screen</th><th>Draws it</th><th>Gets data from</th></tr>
+<tr><td>Login</td><td><code>auth/LoginScreen.tsx</code></td><td><code>login()</code>, <code>requestPasswordReset()</code></td></tr>
+<tr><td>Register</td><td><code>auth/RegisterScreen.tsx</code></td><td><code>register()</code></td></tr>
+<tr><td>Home feed</td><td><code>HomeScreen.tsx</code></td><td><code>subscribeToFeed()</code>, <code>likePost()</code>, <code>unlikePost()</code></td></tr>
+<tr><td>Post &amp; comments</td><td><code>PostDetailScreen.tsx</code></td><td><code>getPost()</code>, <code>subscribeToComments()</code>, <code>addComment()</code></td></tr>
+<tr><td>My network</td><td><code>NetworkScreen.tsx</code></td><td><code>listOtherUsers()</code>, <code>subscribeToMyConnections()</code></td></tr>
+<tr><td>Notifications</td><td><code>NotificationsScreen.tsx</code></td><td><code>subscribeToNotifications()</code></td></tr>
+<tr><td>Profile</td><td><code>ProfileScreen.tsx</code></td><td><code>useAuth()</code>, <code>subscribeToUserPosts()</code></td></tr>
+<tr><td>Create post</td><td><code>CreatePostScreen.tsx</code></td><td><code>uploadPostImage()</code>, <code>createPost()</code></td></tr>
+<tr><td>Settings</td><td><code>SettingsScreen.tsx</code></td><td><code>useAuth()</code>, <code>firebaseConfig</code>, <code>logout()</code></td></tr>
+</table></div>
+
+<div class="note"><b>The Settings screen is your isolation proof.</b> It prints the live Firebase
+project ID straight from <code>firebaseConfig</code>. If someone asks "how do you know it only talks
+to your own backend?", you open Settings on the phone and show them <code>linkora-a274a</code>.</div>
+
+<h3>Where the colours come from</h3>
+<p>Every screen imports one token file, which is why the whole app looks consistent:</p>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/theme/index.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export const</span> colors = {
+  background: <span class="s">'#F4F2EE'</span>,   <span class="c">// page behind the cards</span>
+  surface:    <span class="s">'#FFFFFF'</span>,   <span class="c">// cards, headers, tab bar</span>
+  border:     <span class="s">'#E3E1DD'</span>,   <span class="c">// hairlines</span>
+  primary:    <span class="s">'#0A66C2'</span>,   <span class="c">// buttons, links, active tab</span>
+  text:       <span class="s">'#1D1D1B'</span>,
+  textMuted:  <span class="s">'#5E5E5C'</span>,
+  danger:     <span class="s">'#B42318'</span>,   <span class="c">// delete, sign out</span>
+  success:    <span class="s">'#0E7C3A'</span>,
+} <span class="k">as const</span>;</pre></div>
+<p>Change a value here and it changes everywhere. That is the whole point of a token file — there
+are no hardcoded colour strings scattered through the screens.</p>
+</section>
+
+<!-- ================= FILES ================= -->
+<section id="files">
+<h2>C. File-by-file explanation</h2>
+
+<div class="tablewrap"><table>
+<tr><th>File</th><th>Purpose</th><th>Firebase service</th></tr>
+<tr><td><code>src/config/env.ts</code></td><td>Read + validate env, project tripwire</td><td>—</td></tr>
+<tr><td><code>src/firebase/app.ts</code></td><td>Initialise Firebase</td><td>Auth, Firestore, Storage</td></tr>
+<tr><td><code>src/services/auth.service.ts</code></td><td>Register, login, logout, reset</td><td>Auth</td></tr>
+<tr><td><code>src/services/users.service.ts</code></td><td>Profile CRUD, people list</td><td>Firestore</td></tr>
+<tr><td><code>src/services/posts.service.ts</code></td><td>Feed, create/delete post, likes</td><td>Firestore</td></tr>
+<tr><td><code>src/services/comments.service.ts</code></td><td>Comments</td><td>Firestore</td></tr>
+<tr><td><code>src/services/connections.service.ts</code></td><td>Requests, accept, remove</td><td>Firestore</td></tr>
+<tr><td><code>src/services/notifications.service.ts</code></td><td>In-app notifications</td><td>Firestore</td></tr>
+<tr><td><code>src/services/storage.service.ts</code></td><td>Image upload</td><td>Storage</td></tr>
+<tr><td><code>src/context/AuthContext.tsx</code></td><td>Current user + profile</td><td>via services</td></tr>
+<tr><td><code>src/navigation/RootNavigator.tsx</code></td><td>Signed-in vs signed-out</td><td>—</td></tr>
+</table></div>
+
+<h3 id="firebase">Firebase configuration and initialisation</h3>
+<p><b>Note on naming:</b> many tutorials call this file <code>src/firebase/config.ts</code>. In
+Linkora it is <code>src/firebase/app.ts</code>, and the environment reading is split out into
+<code>src/config/env.ts</code>.</p>
+
+<h4>File 1 — src/config/env.ts</h4>
+<p><b>Purpose:</b> read the Firebase settings out of <code>.env</code>, prove they are present and
+real, and refuse to run against any project except <code>linkora-a274a</code>.</p>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/config/env.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export const</span> firebaseConfig = {
+  apiKey:        <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_API_KEY'</span>, process.env.EXPO_PUBLIC_FIREBASE_API_KEY),
+  authDomain:    <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN'</span>, process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN),
+  projectId:     <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_PROJECT_ID'</span>, process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID),
+  storageBucket: <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET'</span>, process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET),
+  messagingSenderId: <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'</span>, process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID),
+  appId:         <span class="f">required</span>(<span class="s">'EXPO_PUBLIC_FIREBASE_APP_ID'</span>, process.env.EXPO_PUBLIC_FIREBASE_APP_ID),
+} <span class="k">as const</span>;
+
+<span class="k">export const</span> ALLOWED_FIREBASE_PROJECT_ID = <span class="s">'linkora-a274a'</span>;
+
+<span class="k">export function</span> <span class="f">assertPersonalFirebaseProject</span>(): <span class="k">void</span> {
+  <span class="k">if</span> (firebaseConfig.projectId !== ALLOWED_FIREBASE_PROJECT_ID) {
+    <span class="k">throw new</span> <span class="f">Error</span>(<span class="s">'[Linkora] Refusing to start…'</span>);
+  }
+}</pre></div>
+
+<h4>Explanation, piece by piece</h4>
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>What it does</th></tr>
+<tr><td><code>process.env.EXPO_PUBLIC_*</code></td><td>Expo replaces this with the literal value from <code>.env</code> when the app is bundled. Only names starting <code>EXPO_PUBLIC_</code> are exposed.</td></tr>
+<tr><td><code>required(name, value)</code></td><td>Throws a readable error if the value is missing, empty, or still a <code>your_…_here</code> placeholder.</td></tr>
+<tr><td><code>ALLOWED_FIREBASE_PROJECT_ID</code></td><td>A hard-coded tripwire. Linkora is personal, so exactly one project is legal.</td></tr>
+<tr><td><code>assertPersonalFirebaseProject()</code></td><td>Called at import time in <code>app.ts</code>. If <code>.env</code> ever points elsewhere, the app stops instead of silently writing to the wrong database.</td></tr>
+</table></div>
+
+<h4>File 2 — src/firebase/app.ts</h4>
+<p><b>Purpose:</b> create the three Firebase objects the whole app shares.</p>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/firebase/app.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="c">// Fail fast if .env points anywhere other than the personal project.</span>
+<span class="f">assertPersonalFirebaseProject</span>();
+
+<span class="k">export const</span> firebaseApp: FirebaseApp =
+  <span class="f">getApps</span>().length &gt; <span class="n">0</span> ? <span class="f">getApp</span>() : <span class="f">initializeApp</span>(firebaseConfig);
+
+<span class="k">function</span> <span class="f">createAuth</span>(app: FirebaseApp): Auth {
+  <span class="k">try</span> {
+    <span class="k">const</span> { getReactNativePersistence } = <span class="f">require</span>(<span class="s">'firebase/auth'</span>);
+    <span class="k">if</span> (<span class="k">typeof</span> getReactNativePersistence === <span class="s">'function'</span>) {
+      <span class="k">return</span> <span class="f">initializeAuth</span>(app, {
+        persistence: <span class="f">getReactNativePersistence</span>(AsyncStorage),
+      });
+    }
+  } <span class="k">catch</span> { <span class="c">/* already initialised, or not React Native */</span> }
+  <span class="k">return</span> <span class="f">getAuth</span>(app);
+}
+
+<span class="k">export const</span> auth:    Auth            = <span class="f">createAuth</span>(firebaseApp);
+<span class="k">export const</span> db:      Firestore       = <span class="f">getFirestore</span>(firebaseApp);
+<span class="k">export const</span> storage: FirebaseStorage = <span class="f">getStorage</span>(firebaseApp);</pre></div>
+
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>What it does</th></tr>
+<tr><td><code>initializeApp(firebaseConfig)</code></td><td>Connects the app to the Firebase project. This is the moment Linkora becomes bound to <code>linkora-a274a</code>.</td></tr>
+<tr><td><code>getApps().length &gt; 0 ? getApp() : …</code></td><td>Metro's fast refresh can re-run this file while you are editing. Calling <code>initializeApp</code> twice throws, so an existing instance is reused.</td></tr>
+<tr><td><code>initializeAuth(app, { persistence })</code></td><td>Creates the Auth instance <b>with</b> a storage backend.</td></tr>
+<tr><td><code>getReactNativePersistence(AsyncStorage)</code></td><td>Tells Firebase to save the login token in the phone's own local storage. Without it the user is signed out every time the app restarts.</td></tr>
+<tr><td><code>getFirestore(app)</code></td><td>Creates the database handle. Every query in the app starts from this <code>db</code>.</td></tr>
+<tr><td><code>getStorage(app)</code></td><td>Creates the file-storage handle, used only for images.</td></tr>
+</table></div>
+
+<div class="note">The <code>require</code> inside <code>try/catch</code> is deliberate.
+<code>getReactNativePersistence</code> exists only in the SDK's React Native build. Under Metro it
+resolves; under plain Node (a lint or script run) it does not, and the app falls back to in-memory
+auth instead of crashing.</div>
+</section>
+
+<!-- ================= AUTH ================= -->
+<section id="auth">
+<h2>Authentication</h2>
+<p><b>File that handles authentication:</b> <code>src/services/auth.service.ts</code>.
+Email + password only — no company SSO, no LDAP, no Google/Facebook sign-in.</p>
+
+<h3>Registration</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/auth.service.ts → register()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export async function</span> <span class="f">register</span>(params: {
+  email: <span class="k">string</span>; password: <span class="k">string</span>; displayName: <span class="k">string</span>;
+}): Promise&lt;User&gt; {
+  <span class="k">const</span> { email, password, displayName } = params;
+
+  <span class="k">const</span> credential = <span class="k">await</span> <span class="f">createUserWithEmailAndPassword</span>(auth, email.<span class="f">trim</span>(), password);
+
+  <span class="c">// Set the name on the Auth record so it is available immediately.</span>
+  <span class="k">await</span> <span class="f">updateProfile</span>(credential.user, { displayName: displayName.<span class="f">trim</span>() });
+
+  <span class="c">// Then create the Firestore profile the rest of the app reads from.</span>
+  <span class="k">await</span> <span class="f">createUserProfile</span>({
+    uid: credential.user.uid,
+    email: credential.user.email ?? email.<span class="f">trim</span>(),
+    displayName: displayName.<span class="f">trim</span>(),
+  });
+
+  <span class="k">return</span> credential.user;
+}</pre></div>
+
+<h4>Step by step</h4>
+<ol>
+<li><code>createUserWithEmailAndPassword</code> sends the email and password to Firebase Auth.
+Google hashes and stores the password. <b>Linkora never sees or stores it.</b></li>
+<li><code>updateProfile</code> writes the display name onto the Auth record.</li>
+<li><code>createUserProfile</code> (in <code>users.service.ts</code>) writes the Firestore document
+at <code>users/{uid}</code> with empty headline, bio, location and photo.</li>
+<li>Firebase fires <code>onAuthStateChanged</code>. <code>AuthContext</code> picks it up and
+<code>RootNavigator</code> swaps to the signed-in app. <b>No navigation code runs.</b></li>
+</ol>
+
+<div class="note"><b>Why two records?</b> Firebase Auth stores identity only (uid, email, password
+hash). It cannot store a headline or a bio. So Linkora keeps a matching Firestore document at
+<code>users/{uid}</code> for everything else. The uid is the link between them.</div>
+
+<h3>Login and logout</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/auth.service.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export async function</span> <span class="f">login</span>(email: <span class="k">string</span>, password: <span class="k">string</span>): Promise&lt;User&gt; {
+  <span class="k">const</span> credential = <span class="k">await</span> <span class="f">signInWithEmailAndPassword</span>(auth, email.<span class="f">trim</span>(), password);
+  <span class="k">return</span> credential.user;
+}
+
+<span class="k">export async function</span> <span class="f">logout</span>(): Promise&lt;<span class="k">void</span>&gt; {
+  <span class="k">await</span> <span class="f">signOut</span>(auth);
+}
+
+<span class="k">export function</span> <span class="f">subscribeToAuthState</span>(callback: (user: User | <span class="k">null</span>) =&gt; <span class="k">void</span>): () =&gt; <span class="k">void</span> {
+  <span class="k">return</span> <span class="f">onAuthStateChanged</span>(auth, callback);
+}</pre></div>
+
+<ul>
+<li><code>signInWithEmailAndPassword</code> — Firebase verifies the credentials and returns a token,
+which is written to AsyncStorage by the persistence layer.</li>
+<li><code>signOut</code> — clears the stored token. <code>onAuthStateChanged</code> fires with
+<code>null</code>, and the UI returns to Login on its own.</li>
+<li><code>onAuthStateChanged</code> — the event that drives the whole app. It returns an
+<b>unsubscribe function</b>, which <code>AuthContext</code> returns from its <code>useEffect</code>
+so the listener is closed when the provider unmounts.</li>
+</ul>
+
+<h3>How the logged-in user is identified</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/context/AuthContext.tsx (condensed)</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">const</span> [user, setUser] = <span class="f">useState</span>&lt;User | <span class="k">null</span>&gt;(<span class="k">null</span>);
+<span class="k">const</span> [profile, setProfile] = <span class="f">useState</span>&lt;UserProfile | <span class="k">null</span>&gt;(<span class="k">null</span>);
+<span class="k">const</span> [initialising, setInitialising] = <span class="f">useState</span>(<span class="k">true</span>);
+
+<span class="c">// 1. Watch login / logout</span>
+<span class="f">useEffect</span>(() =&gt; {
+  <span class="k">const</span> unsubscribe = <span class="f">subscribeToAuthState</span>((nextUser) =&gt; {
+    <span class="f">setUser</span>(nextUser);
+    <span class="f">setInitialising</span>(<span class="k">false</span>);
+    <span class="k">if</span> (!nextUser) <span class="f">setProfile</span>(<span class="k">null</span>);
+  });
+  <span class="k">return</span> unsubscribe;
+}, []);
+
+<span class="c">// 2. Watch that user's profile document, live</span>
+<span class="f">useEffect</span>(() =&gt; {
+  <span class="k">if</span> (!user) <span class="k">return</span>;
+  <span class="k">const</span> unsubscribe = <span class="f">subscribeToUserProfile</span>(user.uid, setProfile, (e) =&gt; <span class="f">setError</span>(…));
+  <span class="k">return</span> unsubscribe;
+}, [user]);</pre></div>
+
+<p>Any screen then does:</p>
+<div class="codewrap"><pre class="solo"><span class="k">const</span> { user, profile } = <span class="f">useAuth</span>();
+<span class="c">// user.uid    → the Firebase identity</span>
+<span class="c">// profile     → the live Firestore document (name, headline, photo)</span></pre></div>
+
+<div class="note">Two separate pieces of state on purpose. <code>user</code> answers "who is signed
+in?"; <code>profile</code> answers "what do we display?". The profile uses a <b>live listener</b>,
+so editing your name updates every screen instantly without a refresh.</div>
+</section>
+
+<!-- ================= FIRESTORE ================= -->
+<section id="firestore">
+<h2>G. Firestore database guide</h2>
+
+<div class="diagram">users/{uid}
+  └── notifications/{notificationId}
+
+posts/{postId}
+  ├── likes/{likerUid}
+  └── comments/{commentId}
+
+connections/{connectionId}      id = both UIDs sorted, joined with "_"</div>
+
+<h3>users/{uid}</h3>
+<div class="tablewrap"><table>
+<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+<tr><td><code>uid</code></td><td>string</td><td>Same as the document ID</td></tr>
+<tr><td><code>email</code></td><td>string</td><td>Sign-in email</td></tr>
+<tr><td><code>displayName</code></td><td>string</td><td>Full name</td></tr>
+<tr><td><code>headline</code></td><td>string</td><td>One-line description</td></tr>
+<tr><td><code>bio</code></td><td>string</td><td>Longer "about" text</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>City / country</td></tr>
+<tr><td><code>photoURL</code></td><td>string</td><td>Storage download URL, or <code>''</code></td></tr>
+<tr><td><code>createdAt</code>, <code>updatedAt</code></td><td>timestamp</td><td>Set by <code>serverTimestamp()</code></td></tr>
+</table></div>
+<ul>
+<li><b>Created by</b> <code>createUserProfile()</code>, once, at registration.</li>
+<li><b>Read by</b> any signed-in member — that is what makes the people directory work.</li>
+<li><b>Updated by</b> the owner only, and only the presentation fields.
+<code>email</code> and <code>uid</code> cannot be rewritten from the app.</li>
+<li><b>Deleted by</b> the owner. No screen calls this today.</li>
+</ul>
+
+<h3>posts/{postId}</h3>
+<div class="tablewrap"><table>
+<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+<tr><td><code>authorId</code></td><td>string</td><td>Author's UID</td></tr>
+<tr><td><code>authorName</code>, <code>authorHeadline</code>, <code>authorPhotoURL</code></td><td>string</td><td>Copied at write time (denormalised)</td></tr>
+<tr><td><code>text</code></td><td>string</td><td>Body, max 3000 chars (enforced by rules)</td></tr>
+<tr><td><code>imageUrl</code></td><td>string</td><td>Storage URL, or <code>''</code></td></tr>
+<tr><td><code>likeCount</code>, <code>commentCount</code></td><td>number</td><td>Running totals</td></tr>
+<tr><td><code>createdAt</code></td><td>timestamp</td><td>Server time</td></tr>
+</table></div>
+
+<div class="note"><b>Why copy the author's name onto every post?</b> This is called
+<b>denormalisation</b>. Firestore charges per document read and has no JOIN. If the feed stored only
+<code>authorId</code>, showing 50 posts would need 50 extra reads to fetch each author. Copying the
+name and photo makes the feed <b>one query</b>. The trade-off: if someone renames themselves, their
+old posts keep the old name until rewritten. For a personal app that is the right trade.</div>
+
+<h3>posts/{postId}/likes/{likerUid}</h3>
+<p>Fields: <code>uid</code> (string), <code>createdAt</code> (timestamp).</p>
+<div class="note"><b>The document ID is the liker's UID.</b> That single design decision means a
+user <i>physically cannot</i> like a post twice — a second like overwrites the same document — and
+the security rule becomes one line. No "check if already liked" query is needed before writing.</div>
+
+<h3>posts/{postId}/comments/{commentId}</h3>
+<p>Fields: <code>authorId</code>, <code>authorName</code>, <code>authorPhotoURL</code>,
+<code>text</code> (1–1000 chars), <code>createdAt</code>. Auto-generated ID from
+<code>addDoc</code>.</p>
+<p>Deleted by the comment's author <b>or</b> the post's author (basic moderation).</p>
+
+<h3>connections/{connectionId}</h3>
+<div class="tablewrap"><table>
+<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
+<tr><td><code>members</code></td><td>array of 2 strings</td><td>Both UIDs, sorted</td></tr>
+<tr><td><code>requesterId</code></td><td>string</td><td>Who asked</td></tr>
+<tr><td><code>recipientId</code></td><td>string</td><td>Who was asked</td></tr>
+<tr><td><code>status</code></td><td>string</td><td><code>'pending'</code> or <code>'accepted'</code></td></tr>
+<tr><td><code>createdAt</code>, <code>updatedAt</code></td><td>timestamp</td><td>Server time</td></tr>
+</table></div>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/types/index.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export function</span> <span class="f">connectionIdFor</span>(uidA: <span class="k">string</span>, uidB: <span class="k">string</span>): <span class="k">string</span> {
+  <span class="k">return</span> [uidA, uidB].<span class="f">sort</span>().<span class="f">join</span>(<span class="s">'_'</span>);
+}</pre></div>
+
+<div class="note"><b>Why a deterministic ID?</b> Sorting the two UIDs means A→B and B→A produce the
+<i>same</i> document ID. So a pair of users can only ever have one connection document. Duplicate
+requests are impossible by construction, and checking "are we connected?" is a direct document read
+instead of a query.</div>
+
+<h3>users/{uid}/notifications/{notificationId}</h3>
+<p>Fields: <code>recipientId</code>, <code>actorId</code>, <code>actorName</code>,
+<code>actorPhotoURL</code>, <code>type</code>, <code>targetPostId</code>, <code>read</code>,
+<code>createdAt</code>.</p>
+<p><code>type</code> is one of <code>'like'</code>, <code>'comment'</code>,
+<code>'connection_request'</code>, <code>'connection_accepted'</code>.</p>
+<p><b>A subcollection, not a top-level collection</b>, so "only I can read my notifications" is a
+path rule rather than a field filter. Other users may still <i>create</i> one in your subcollection —
+that is how "X liked your post" reaches you.</p>
+</section>
+
+<!-- ================= STORAGE ================= -->
+<section id="storage">
+<h2>Firebase Storage &amp; image upload</h2>
+<p><b>File:</b> <code>src/services/storage.service.ts</code>. Two upload paths only.</p>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/storage.service.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">async function</span> <span class="f">uriToBlob</span>(localUri: <span class="k">string</span>): Promise&lt;Blob&gt; {
+  <span class="k">const</span> response = <span class="k">await</span> <span class="f">fetch</span>(localUri);
+  <span class="k">if</span> (!response.ok) <span class="k">throw new</span> <span class="f">Error</span>(<span class="s">'Could not read the selected image…'</span>);
+  <span class="k">return await</span> response.<span class="f">blob</span>();
+}
+
+<span class="k">export async function</span> <span class="f">uploadAvatar</span>(uid: <span class="k">string</span>, localUri: <span class="k">string</span>): Promise&lt;<span class="k">string</span>&gt; {
+  <span class="k">const</span> blob = <span class="k">await</span> <span class="f">uriToBlob</span>(localUri);
+  <span class="k">const</span> target = <span class="f">ref</span>(storage, <span class="s">`users/${uid}/avatar.jpg`</span>);
+  <span class="k">await</span> <span class="f">uploadBytes</span>(target, blob, { contentType: <span class="s">'image/jpeg'</span> });
+  <span class="k">return await</span> <span class="f">getDownloadURL</span>(target);
+}
+
+<span class="k">export async function</span> <span class="f">uploadPostImage</span>(uid: <span class="k">string</span>, localUri: <span class="k">string</span>): Promise&lt;<span class="k">string</span>&gt; {
+  <span class="k">const</span> blob = <span class="k">await</span> <span class="f">uriToBlob</span>(localUri);
+  <span class="k">const</span> target = <span class="f">ref</span>(storage, <span class="s">`posts/${uid}/${Date.now()}.jpg`</span>);
+  <span class="k">await</span> <span class="f">uploadBytes</span>(target, blob, { contentType: <span class="s">'image/jpeg'</span> });
+  <span class="k">return await</span> <span class="f">getDownloadURL</span>(target);
+}</pre></div>
+
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>What it does</th></tr>
+<tr><td><code>fetch(localUri)</code></td><td>The image picker returns a local path like <code>file:///…/IMG_001.jpg</code>. In React Native, <code>fetch</code> is the standard way to read it. <b>This is a device-local read, not a network request.</b> It is the only <code>fetch</code> in the whole app.</td></tr>
+<tr><td><code>.blob()</code></td><td>Turns the file into binary data, which is what Storage accepts.</td></tr>
+<tr><td><code>ref(storage, path)</code></td><td>Points at a location in the bucket. Both paths <b>start with the uploader's UID</b>, which is what lets the rules say "you may only write in your own folder".</td></tr>
+<tr><td><code>uploadBytes(...)</code></td><td>Performs the upload.</td></tr>
+<tr><td><code>getDownloadURL(target)</code></td><td>Returns a public HTTPS URL. That string is what gets saved into the Firestore document.</td></tr>
+<tr><td><code>Date.now()</code> in the post path</td><td>Gives each post image a unique name so a second upload does not overwrite the first. The avatar deliberately uses a fixed name so a new photo replaces the old one.</td></tr>
+</table></div>
+
+<h4>Order of operations matters</h4>
+<div class="diagram">Pick image  →  Upload to Storage  →  get URL  →  write Firestore document
+                                                    ↑
+                        the post is only created once the image URL exists,
+                        so a post can never point at a missing image</div>
+</section>
+
+<!-- ================= POSTS ================= -->
+<section id="posts">
+<h2>Posts, likes and comments</h2>
+
+<h3>Creating a post</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/posts.service.ts → createPost()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export async function</span> <span class="f">createPost</span>(params: {
+  author: UserProfile; text: <span class="k">string</span>; imageUrl?: <span class="k">string</span>;
+}): Promise&lt;<span class="k">string</span>&gt; {
+  <span class="k">const</span> created = <span class="k">await</span> <span class="f">addDoc</span>(<span class="f">collection</span>(db, POSTS), {
+    authorId:        params.author.uid,
+    authorName:      params.author.displayName,
+    authorHeadline:  params.author.headline,
+    authorPhotoURL:  params.author.photoURL,
+    text:            params.text.<span class="f">trim</span>(),
+    imageUrl:        params.imageUrl ?? <span class="s">''</span>,
+    likeCount:       <span class="n">0</span>,
+    commentCount:    <span class="n">0</span>,
+    createdAt:       <span class="f">serverTimestamp</span>(),
+  });
+  <span class="k">return</span> created.id;
+}</pre></div>
+
+<ul>
+<li><code>collection(db, 'posts')</code> — points at the posts collection.</li>
+<li><code>addDoc(...)</code> — creates a document with an <b>auto-generated ID</b>.
+(Compare with <code>setDoc</code>, used for likes and connections, where <i>we</i> choose the ID.)</li>
+<li><code>serverTimestamp()</code> — Google's clock fills this in, not the phone's. A phone with the
+wrong date cannot corrupt the feed order.</li>
+</ul>
+
+<h3>Fetching posts — the live feed</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/posts.service.ts → subscribeToFeed()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export function</span> <span class="f">subscribeToFeed</span>(
+  callback: (posts: Post[]) =&gt; <span class="k">void</span>,
+  onError?: (error: Error) =&gt; <span class="k">void</span>,
+  max: <span class="k">number</span> = <span class="n">50</span>,
+): () =&gt; <span class="k">void</span> {
+  <span class="k">return</span> <span class="f">onSnapshot</span>(
+    <span class="f">query</span>(<span class="f">collection</span>(db, POSTS), <span class="f">orderBy</span>(<span class="s">'createdAt'</span>, <span class="s">'desc'</span>), <span class="f">fsLimit</span>(max)),
+    (snapshot) =&gt; <span class="f">callback</span>(snapshot.docs.<span class="f">map</span>((d) =&gt; <span class="f">toPost</span>(d.id, d.<span class="f">data</span>()))),
+    (error) =&gt; onError?.(error),
+  );
+}</pre></div>
+
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>What it does</th></tr>
+<tr><td><code>query(collection, orderBy, limit)</code></td><td>Builds the query: newest first, at most 50.</td></tr>
+<tr><td><code>onSnapshot(...)</code></td><td><b>The key line.</b> Not a one-off read — it opens a live listener. Firestore pushes an update whenever a matching document changes anywhere, so a post from another phone appears without a refresh.</td></tr>
+<tr><td><code>snapshot.docs.map(...)</code></td><td>Converts raw documents into typed <code>Post</code> objects.</td></tr>
+<tr><td><b>the return value</b></td><td><code>onSnapshot</code> returns an <b>unsubscribe</b> function. The screen returns it from <code>useEffect</code>, so leaving the screen closes the connection. Forgetting this is the classic React Native memory leak.</td></tr>
+</table></div>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/screens/HomeScreen.tsx — how the screen consumes it</span><button class="copybtn">Copy</button></div>
+<pre><span class="f">useEffect</span>(() =&gt; {
+  <span class="k">const</span> unsubscribe = <span class="f">subscribeToFeed</span>(
+    (nextPosts) =&gt; { <span class="f">setPosts</span>(nextPosts); <span class="f">setLoading</span>(<span class="k">false</span>); <span class="f">setError</span>(<span class="k">null</span>); },
+    (listenerError) =&gt; { <span class="f">setError</span>(<span class="f">describeError</span>(listenerError)); <span class="f">setLoading</span>(<span class="k">false</span>); },
+  );
+  <span class="k">return</span> unsubscribe;   <span class="c">// ← cleanup: closes the listener</span>
+}, []);</pre></div>
+
+<h3>How a like works</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/posts.service.ts → likePost()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export async function</span> <span class="f">likePost</span>(params: { post: Post; actor: UserProfile }): Promise&lt;<span class="k">void</span>&gt; {
+  <span class="k">const</span> { post, actor } = params;
+
+  <span class="k">const</span> batch = <span class="f">writeBatch</span>(db);
+  batch.<span class="f">set</span>(<span class="f">doc</span>(db, POSTS, post.id, <span class="s">'likes'</span>, actor.uid), {
+    uid: actor.uid, createdAt: <span class="f">serverTimestamp</span>(),
+  });
+  batch.<span class="f">update</span>(<span class="f">doc</span>(db, POSTS, post.id), { likeCount: <span class="f">increment</span>(<span class="n">1</span>) });
+  <span class="k">await</span> batch.<span class="f">commit</span>();
+
+  <span class="c">// Do not notify yourself about your own like.</span>
+  <span class="k">if</span> (post.authorId !== actor.uid) {
+    <span class="k">await</span> <span class="f">createNotification</span>({ recipientId: post.authorId, actor, type: <span class="s">'like'</span>, targetPostId: post.id });
+  }
+}</pre></div>
+
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>What it does</th></tr>
+<tr><td><code>writeBatch(db)</code></td><td>Groups writes so they succeed or fail <b>together</b>. Without it, the like could save while the counter failed, and the number would drift out of sync forever.</td></tr>
+<tr><td><code>doc(db, 'posts', post.id, 'likes', actor.uid)</code></td><td>Points at the like document. The last segment is the liker's UID — that is the anti-double-like design.</td></tr>
+<tr><td><code>increment(1)</code></td><td>A server-side atomic operation. Two people liking at the same instant both count. Reading the number and writing <code>n+1</code> would lose one of them.</td></tr>
+<tr><td><code>batch.commit()</code></td><td>Sends both writes as one atomic request.</td></tr>
+</table></div>
+
+<h4>Optimistic UI in HomeScreen</h4>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/screens/HomeScreen.tsx → handleToggleLike (condensed)</span><button class="copybtn">Copy</button></div>
+<pre><span class="c">// 1. Flip the heart immediately so the tap feels instant</span>
+<span class="f">setLikedIds</span>((previous) =&gt; { <span class="k">const</span> next = <span class="k">new</span> <span class="f">Set</span>(previous);
+  alreadyLiked ? next.<span class="f">delete</span>(post.id) : next.<span class="f">add</span>(post.id); <span class="k">return</span> next; });
+
+<span class="k">try</span> {
+  alreadyLiked ? <span class="k">await</span> <span class="f">unlikePost</span>({ postId: post.id, uid: profile.uid })
+               : <span class="k">await</span> <span class="f">likePost</span>({ post, actor: profile });
+} <span class="k">catch</span> (caught) {
+  <span class="c">// 2. Roll the heart back if the write failed</span>
+  <span class="f">setLikedIds</span>(<span class="c">/* …reverse the change… */</span>);
+  <span class="f">setError</span>(<span class="f">describeError</span>(caught));
+}</pre></div>
+<p>This is the <b>optimistic update</b> pattern: change the UI first, undo it if the server refuses.
+The post's <code>likeCount</code> number itself needs no manual update — the feed listener pushes
+the new value automatically.</p>
+
+<h3>How commenting works</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/comments.service.ts → addComment()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">const</span> created = <span class="k">await</span> <span class="f">addDoc</span>(<span class="f">collection</span>(db, <span class="s">'posts'</span>, post.id, <span class="s">'comments'</span>), {
+  authorId: author.uid, authorName: author.displayName,
+  authorPhotoURL: author.photoURL, text: text.<span class="f">trim</span>(), createdAt: <span class="f">serverTimestamp</span>(),
+});
+
+<span class="k">await</span> <span class="f">updateDoc</span>(<span class="f">doc</span>(db, <span class="s">'posts'</span>, post.id), { commentCount: <span class="f">increment</span>(<span class="n">1</span>) });
+
+<span class="k">if</span> (post.authorId !== author.uid) {
+  <span class="k">await</span> <span class="f">createNotification</span>({ recipientId: post.authorId, actor: author,
+                             type: <span class="s">'comment'</span>, targetPostId: post.id });
+}</pre></div>
+<div class="note"><b>Why not a batch here?</b> The comment uses <code>addDoc</code>, which asks the
+server to generate the ID, so it cannot be part of a batch built in advance. If the counter update
+fails, the comment still exists — the safer of the two failure modes.</div>
+</section>
+
+<!-- ================= NETWORK ================= -->
+<section id="network">
+<h2>Connections</h2>
+
+<h3>Sending a request</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/connections.service.ts → sendConnectionRequest()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">const</span> id = <span class="f">connectionIdFor</span>(requester.uid, recipientId);
+
+<span class="k">await</span> <span class="f">setDoc</span>(<span class="f">doc</span>(db, CONNECTIONS, id), {
+  members:     [requester.uid, recipientId].<span class="f">sort</span>(),
+  requesterId: requester.uid,
+  recipientId,
+  status:      <span class="s">'pending'</span>,
+  createdAt:   <span class="f">serverTimestamp</span>(),
+  updatedAt:   <span class="f">serverTimestamp</span>(),
+});
+
+<span class="k">await</span> <span class="f">createNotification</span>({ recipientId, actor: requester,
+                           type: <span class="s">'connection_request'</span>, targetPostId: <span class="s">''</span> });</pre></div>
+
+<ul>
+<li><code>setDoc</code> (not <code>addDoc</code>) because <b>we choose the ID</b> — the sorted pair.</li>
+<li><code>members</code> is sorted and stored as an array so the "show me all my connections" query
+can use <code>array-contains</code>.</li>
+</ul>
+
+<h3>Accepting</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/connections.service.ts → acceptConnectionRequest()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">await</span> <span class="f">updateDoc</span>(<span class="f">doc</span>(db, CONNECTIONS, connection.id), {
+  status: <span class="s">'accepted'</span>, updatedAt: <span class="f">serverTimestamp</span>(),
+});
+
+<span class="k">await</span> <span class="f">createNotification</span>({ recipientId: connection.requesterId, actor: accepter,
+                           type: <span class="s">'connection_accepted'</span>, targetPostId: <span class="s">''</span> });</pre></div>
+<p>The security rule permits this <b>only</b> for <code>recipientId</code>, and only for the exact
+transition <code>pending → accepted</code>. The requester cannot accept their own request.</p>
+
+<h3>Listing my connections</h3>
+<div class="codewrap"><pre class="solo"><span class="f">onSnapshot</span>(
+  <span class="f">query</span>(<span class="f">collection</span>(db, CONNECTIONS), <span class="f">where</span>(<span class="s">'members'</span>, <span class="s">'array-contains'</span>, uid)),
+  (snapshot) =&gt; <span class="f">callback</span>(snapshot.docs.<span class="f">map</span>(…)),
+);</pre></div>
+<p><code>array-contains</code> matches any document whose <code>members</code> array holds your UID —
+so one query returns every connection you are part of, on either side. <code>NetworkScreen</code>
+then splits pending from accepted locally with <code>useMemo</code>.</p>
+</section>
+
+<!-- ================= NOTIFICATIONS ================= -->
+<section id="notifications">
+<h2>Notifications</h2>
+<p><span class="badge b-ok">IMPLEMENTED</span> in-app only &nbsp;
+<span class="badge b-no">NOT IMPLEMENTED</span> push / FCM</p>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/services/notifications.service.ts → createNotification()</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">await</span> <span class="f">addDoc</span>(<span class="f">notificationsOf</span>(recipientId), {
+  recipientId,
+  actorId:        actor.uid,
+  actorName:      actor.displayName,
+  actorPhotoURL:  actor.photoURL,
+  type,             <span class="c">// 'like' | 'comment' | 'connection_request' | 'connection_accepted'</span>
+  targetPostId,
+  read:           <span class="k">false</span>,
+  createdAt:      <span class="f">serverTimestamp</span>(),
+});</pre></div>
+
+<p><code>notificationsOf(uid)</code> is just
+<code>collection(db, 'users', uid, 'notifications')</code>.</p>
+
+<div class="note"><b>You write into someone else's subcollection.</b> That sounds dangerous, so the
+rule constrains it: the new document's <code>actorId</code> must equal
+<code>request.auth.uid</code>. You can tell someone you liked their post; you cannot forge a
+notification that appears to come from a third person.</div>
+
+<p>Notifications are created from three services — <code>posts.service.ts</code> (like),
+<code>comments.service.ts</code> (comment) and <code>connections.service.ts</code> (request,
+accepted). Each one checks <code>if (post.authorId !== actor.uid)</code> first, so you never get
+notified about your own action.</p>
+
+<h4>Why there are no push notifications</h4>
+<p>Firebase Cloud Messaging needs native code, which does not run inside Expo Go. Adding it would
+require <code>expo-notifications</code>, a custom development build, and a server component to send
+the messages. Linkora's notifications are read from Firestore while the app is open.</p>
+</section>
+
+<!-- ================= NAVIGATION ================= -->
+<section id="navigation">
+<h2>Navigation and protected screens</h2>
+<p><b>Where the navigation code is:</b> <code>src/navigation/</code> — four files.</p>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/navigation/RootNavigator.tsx (the important part)</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">const</span> { user, initialising } = <span class="f">useAuth</span>();
+
+<span class="c">// Brief splash while Firebase restores any saved session from AsyncStorage.</span>
+<span class="k">if</span> (initialising) {
+  <span class="k">return</span> &lt;View style={styles.splash}&gt;&lt;ActivityIndicator … /&gt;&lt;/View&gt;;
+}
+
+<span class="k">return</span> (
+  &lt;NavigationContainer&gt;
+    {user ? (
+      &lt;Stack.Navigator&gt;
+        &lt;Stack.Screen name=<span class="s">"Tabs"</span> component={MainTabs} … /&gt;
+        &lt;Stack.Screen name=<span class="s">"CreatePost"</span> component={CreatePostScreen} … /&gt;
+        &lt;Stack.Screen name=<span class="s">"PostDetail"</span> component={PostDetailScreen} … /&gt;
+        &lt;Stack.Screen name=<span class="s">"EditProfile"</span> component={EditProfileScreen} … /&gt;
+        &lt;Stack.Screen name=<span class="s">"Settings"</span> component={SettingsScreen} … /&gt;
+        &lt;Stack.Screen name=<span class="s">"UserProfile"</span> component={UserProfileScreen} … /&gt;
+      &lt;/Stack.Navigator&gt;
+    ) : (
+      &lt;AuthNavigator /&gt;
+    )}
+  &lt;/NavigationContainer&gt;
+);</pre></div>
+
+<h4>How protected screens work — this is the answer to give</h4>
+<p>There is <b>no route guard, no redirect, and no "if not logged in, navigate to Login" code
+anywhere</b>. The signed-in screens are simply <b>not mounted</b> when <code>user</code> is
+<code>null</code>. They do not exist in the navigation tree, so they cannot be reached — not by a
+back gesture, not by a deep link.</p>
+<p>When Firebase reports a login or logout, <code>user</code> changes, React re-renders, and the
+entire half of the app swaps. That is why <code>LoginScreen</code> has this comment after a
+successful sign-in:</p>
+<div class="codewrap"><pre class="solo"><span class="k">await</span> <span class="f">login</span>(email, password);
+<span class="c">// No navigation call needed — RootNavigator swaps automatically on login.</span></pre></div>
+
+<h3>The three navigators</h3>
+<div class="tablewrap"><table>
+<tr><th>File</th><th>Type</th><th>Screens</th></tr>
+<tr><td><code>RootNavigator.tsx</code></td><td>Native stack</td><td>Tabs, CreatePost, PostDetail, EditProfile, Settings, UserProfile</td></tr>
+<tr><td><code>AuthNavigator.tsx</code></td><td>Native stack</td><td>Login, Register</td></tr>
+<tr><td><code>MainTabs.tsx</code></td><td>Bottom tabs</td><td>Home 🏠, Network 👥, Notifications 🔔, Profile 👤</td></tr>
+</table></div>
+
+<h3>Type-safe routes</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">src/navigation/types.ts</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">export type</span> MainStackParamList = {
+  Tabs:        <span class="k">undefined</span>;
+  CreatePost:  <span class="k">undefined</span>;
+  PostDetail:  { postId: <span class="k">string</span> };
+  EditProfile: <span class="k">undefined</span>;
+  Settings:    <span class="k">undefined</span>;
+  UserProfile: { uid: <span class="k">string</span> };
+};</pre></div>
+<p>Because routes are typed, <code>navigation.navigate('PostDetail', { postId })</code> is checked
+at compile time. Misspelling the route, or forgetting <code>postId</code>, is a TypeScript error
+rather than a crash on the phone.</p>
+</section>
+
+<!-- ================= SECURITY ================= -->
+<section id="security">
+<h2>H. Firebase Security Rules explained</h2>
+
+<div class="note"><b>The single most important idea:</b> these rules run on <b>Google's servers</b>,
+not in the app. Someone could modify the app, or call the Firestore API directly with a script —
+the rules still apply. This, not the app code, is what actually protects the data.</div>
+
+<h3>Rule 1 — deny everything by default</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">firestore.rules (end of file)</span><button class="copybtn">Copy</button></div>
+<pre>match /{document=**} {
+  allow read, write: <span class="k">if false</span>;
+}</pre></div>
+<p><b>Meaning:</b> any path not explicitly allowed above is refused. The default answer is "no", and
+each collection has to earn a "yes". There is no
+<code>allow read, write: if true</code> anywhere in the file, and no time-limited test mode.</p>
+
+<h3>Rule 2 — you can only edit your own profile</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">firestore.rules → users/{uid}</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">function</span> <span class="f">isSelf</span>(uid) {
+  <span class="k">return</span> <span class="f">isSignedIn</span>() &amp;&amp; request.auth.uid == uid;
+}
+
+allow read: <span class="k">if</span> <span class="f">isSignedIn</span>();
+
+allow update: <span class="k">if</span> <span class="f">isSelf</span>(uid)
+              &amp;&amp; <span class="f">onlyChanges</span>([<span class="s">'displayName'</span>, <span class="s">'headline'</span>, <span class="s">'bio'</span>,
+                             <span class="s">'location'</span>, <span class="s">'photoURL'</span>, <span class="s">'updatedAt'</span>]);</pre></div>
+
+<div class="tablewrap"><table>
+<tr><th>Expression</th><th>In plain English</th></tr>
+<tr><td><code>request.auth</code></td><td>Who is calling. <code>null</code> if signed out.</td></tr>
+<tr><td><code>request.auth.uid == uid</code></td><td>"The person calling has the same UID as the document they are editing." Since the document ID <i>is</i> the user's UID, this means <b>you can only write your own profile</b>.</td></tr>
+<tr><td><code>allow read: if isSignedIn()</code></td><td>Any signed-in member may read any profile — needed for the people directory. A signed-out request reads nothing.</td></tr>
+<tr><td><code>onlyChanges([...])</code></td><td>The write may touch <b>only</b> those fields. <code>email</code> and <code>uid</code> are absent from the list, so they cannot be rewritten from the app.</td></tr>
+</table></div>
+
+<div class="codewrap">
+<div class="codehead"><span class="codepath">firestore.rules → the helper</span><button class="copybtn">Copy</button></div>
+<pre><span class="k">function</span> <span class="f">changedKeys</span>() {
+  <span class="k">return</span> request.resource.data.<span class="f">diff</span>(resource.data).<span class="f">affectedKeys</span>();
+}
+<span class="k">function</span> <span class="f">onlyChanges</span>(allowed) {
+  <span class="k">return</span> <span class="f">changedKeys</span>().<span class="f">hasOnly</span>(allowed);
+}</pre></div>
+<ul>
+<li><code>resource.data</code> — the document <b>as it is now</b>.</li>
+<li><code>request.resource.data</code> — the document <b>as it would be after</b> the write.</li>
+<li><code>.diff(...).affectedKeys()</code> — the set of field names that actually change.</li>
+<li><code>.hasOnly([...])</code> — true if that set contains nothing outside the allowed list.</li>
+</ul>
+
+<h3>Rule 3 — the counter rule (the interesting one)</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">firestore.rules → posts/{postId}</span><button class="copybtn">Copy</button></div>
+<pre>allow update: <span class="k">if</span> <span class="f">isSignedIn</span>()
+              &amp;&amp; <span class="f">onlyChanges</span>([<span class="s">'likeCount'</span>])
+              &amp;&amp; (
+                request.resource.data.likeCount == resource.data.likeCount + <span class="n">1</span>
+                || request.resource.data.likeCount == resource.data.likeCount - <span class="n">1</span>
+              );</pre></div>
+<p><b>The problem:</b> anyone must be able to like anyone's post, so non-authors need write access to
+<code>likeCount</code>. But naive permission would let a member set a post to a million likes.</p>
+<p><b>The fix:</b> the write may change <i>only</i> <code>likeCount</code>, and only by <b>exactly
+±1</b>. Firestore evaluates the result of <code>increment()</code> here, so these comparisons see
+the final number.</p>
+
+<h3>Rule 4 — one like per person</h3>
+<div class="codewrap"><pre class="solo">match /likes/{likerUid} {
+  allow create: <span class="k">if</span> <span class="f">isSelf</span>(likerUid) &amp;&amp; request.resource.data.uid == likerUid;
+  allow delete: <span class="k">if</span> <span class="f">isSelf</span>(likerUid);
+  allow update: <span class="k">if false</span>;
+}</pre></div>
+<p>The document ID is the liker's UID, so <code>isSelf(likerUid)</code> means "you can only create
+or remove <b>your own</b> like". <code>allow update: if false</code> because a like has no mutable
+fields.</p>
+
+<h3>Rule 5 — only the recipient may accept</h3>
+<div class="codewrap"><pre class="solo">allow update: <span class="k">if</span> <span class="f">isSignedIn</span>()
+              &amp;&amp; request.auth.uid == resource.data.recipientId
+              &amp;&amp; resource.data.status == <span class="s">'pending'</span>
+              &amp;&amp; request.resource.data.status == <span class="s">'accepted'</span>
+              &amp;&amp; <span class="f">onlyChanges</span>([<span class="s">'status'</span>, <span class="s">'updatedAt'</span>]);</pre></div>
+<p>Four conditions at once: you must be the recipient; it must currently be pending; it must become
+accepted; and nothing else may change. The requester cannot accept their own request.</p>
+
+<h3>Rule 6 — unfinished features are locked, not left open</h3>
+<div class="codewrap"><pre class="solo">match /jobs/{jobId}                 { allow read, write: <span class="k">if false</span>; }
+match /companies/{companyId}        { allow read, write: <span class="k">if false</span>; }
+match /applications/{applicationId} { allow read, write: <span class="k">if false</span>; }
+match /conversations/{conversationId} {
+  allow read, write: <span class="k">if false</span>;
+  match /messages/{messageId} { allow read, write: <span class="k">if false</span>; }
+}</pre></div>
+<p>These collections are designed but have no app code. Denying them explicitly means an unfinished
+feature can never quietly become an unsecured collection.</p>
+
+<h3>Storage rules</h3>
+<div class="codewrap">
+<div class="codehead"><span class="codepath">storage.rules</span><button class="copybtn">Copy</button></div>
+<pre>match /users/{uid}/{fileName} {
+  allow read:  <span class="k">if</span> <span class="f">isSignedIn</span>();
+  allow write: <span class="k">if</span> <span class="f">isSelf</span>(uid) &amp;&amp; <span class="f">isImage</span>() &amp;&amp; <span class="f">isReasonableSize</span>();
+}
+
+<span class="k">function</span> <span class="f">isImage</span>()           { <span class="k">return</span> request.resource.contentType.<span class="f">matches</span>(<span class="s">'image/.*'</span>); }
+<span class="k">function</span> <span class="f">isReasonableSize</span>()  { <span class="k">return</span> request.resource.size &lt; <span class="n">5</span> * <span class="n">1024</span> * <span class="n">1024</span>; }</pre></div>
+<p>Because every writable path <b>starts with the uploader's UID</b>, "you may only write into your
+own folder" is one comparison. The size cap stops a mistake running up a bill; the content-type
+check stops the bucket being used to host arbitrary files.</p>
+</section>
+
+<!-- ================= DATA FLOW ================= -->
+<section id="dataflow">
+<h2>F. Data flow diagrams</h2>
+
+<h3>Registration</h3>
+<div class="diagram">RegisterScreen.tsx
+  ↓  validates name / email / password locally
+register()                              src/services/auth.service.ts
+  ↓
+createUserWithEmailAndPassword()        Firebase Auth
+  ↓
+updateProfile({ displayName })          Firebase Auth
+  ↓
+createUserProfile()                     src/services/users.service.ts
+  ↓
+setDoc(users/{uid})                     Firestore
+  ↓
+onAuthStateChanged fires
+  ↓
+AuthContext sets user, then listens to users/{uid}
+  ↓
+RootNavigator renders MainTabs → HomeScreen</div>
+
+<h3>Login</h3>
+<div class="diagram">LoginScreen.tsx → login() → signInWithEmailAndPassword()
+  ↓
+token saved to AsyncStorage (getReactNativePersistence)
+  ↓
+onAuthStateChanged → AuthContext → RootNavigator → MainTabs</div>
+
+<h3>Profile update</h3>
+<div class="diagram">EditProfileScreen.tsx
+  ↓  (if photo changed)  uploadAvatar() → Storage users/{uid}/avatar.jpg → download URL
+  ↓
+updateUserProfile(uid, { displayName, headline, location, bio, photoURL })
+  ↓
+updateDoc(users/{uid})                  Firestore
+  ↓
+subscribeToUserProfile listener fires   (already open in AuthContext)
+  ↓
+profile updates everywhere at once — ProfileScreen, SettingsScreen, new posts</div>
+
+<h3>Create post</h3>
+<div class="diagram">CreatePostScreen.tsx
+  ↓  text + optional image
+(if image) uploadPostImage() → Storage posts/{uid}/{timestamp}.jpg → download URL
+  ↓
+createPost({ author, text, imageUrl })
+  ↓
+addDoc(posts)                           Firestore
+  ↓
+subscribeToFeed listener fires on every device
+  ↓
+HomeScreen setPosts → FlatList → PostCard → user sees post</div>
+
+<h3>Fetch posts</h3>
+<div class="diagram">HomeScreen useEffect
+  ↓
+subscribeToFeed(callback)
+  ↓
+onSnapshot( posts, orderBy createdAt desc, limit 50 )
+  ↓  live push whenever anything changes
+snapshot.docs.map(toPost)
+  ↓
+setPosts([...])  →  FlatList  →  PostCard
+
+on unmount: useEffect returns unsubscribe() → listener closed</div>
+
+<h3>Like</h3>
+<div class="diagram">PostCard onToggleLike
+  ↓
+HomeScreen: setLikedIds(...)            ← optimistic, heart fills instantly
+  ↓
+likePost({ post, actor })
+  ↓
+writeBatch:  set(posts/{id}/likes/{uid})  +  update(posts/{id}, likeCount +1)
+  ↓  commit() — both or neither
+createNotification(type: 'like')  →  users/{authorId}/notifications
+  ↓
+feed listener pushes the new likeCount → number updates by itself
+
+on failure: setLikedIds rolls back + ErrorBanner shows the reason</div>
+
+<h3>Comment</h3>
+<div class="diagram">PostDetailScreen composer → handleSend()
+  ↓
+addComment({ post, author, text })
+  ↓
+addDoc(posts/{id}/comments)             Firestore
+  ↓
+updateDoc(posts/{id}, commentCount +1)
+  ↓
+createNotification(type: 'comment')
+  ↓
+subscribeToComments listener fires → comment appears in the list</div>
+
+<h3>Connection</h3>
+<div class="diagram">NetworkScreen "Connect"
+  ↓
+sendConnectionRequest({ requester, recipientId })
+  ↓
+setDoc(connections/{sortedPairId}, status 'pending')
+  ↓
+createNotification(type: 'connection_request')
+  ↓
+recipient's subscribeToMyConnections listener fires
+  ↓
+invitation appears at the top of their Network screen
+  ↓
+"Accept" → acceptConnectionRequest() → updateDoc(status 'accepted')
+  ↓
+createNotification(type: 'connection_accepted') → back to the requester</div>
+
+<h3>Image upload</h3>
+<div class="diagram">ImagePicker.requestMediaLibraryPermissionsAsync()   ← OS permission dialog
+  ↓  granted
+ImagePicker.launchImageLibraryAsync({ quality: 0.7 })
+  ↓  returns file:///…/IMG_0001.jpg
+uriToBlob(): fetch(localUri).blob()                ← device-local read, NOT network
+  ↓
+uploadBytes(ref(storage, 'posts/{uid}/{ts}.jpg'), blob)
+  ↓
+getDownloadURL() → https://firebasestorage.googleapis.com/…
+  ↓
+that URL string is stored in the Firestore document</div>
+</section>
+
+<!-- ================= CONCEPTS ================= -->
+<section id="concepts">
+<h2>I. React Native concepts used in Linkora</h2>
+
+<div class="tablewrap"><table>
+<tr><th>Concept</th><th>What it is</th><th>Where it is used here</th></tr>
+<tr><td><b>Component</b></td><td>A function returning UI</td><td><code>Button</code>, <code>Avatar</code>, <code>PostCard</code>, <code>Input</code>, <code>EmptyState</code>, <code>ErrorBanner</code></td></tr>
+<tr><td><b>Props</b></td><td>Inputs passed into a component</td><td><code>&lt;Avatar name={…} photoURL={…} size={44} /&gt;</code></td></tr>
+<tr><td><b>State</b></td><td>Data that changes and re-renders the UI</td><td><code>posts</code>, <code>likedIds</code>, <code>error</code>, <code>busy</code> in <code>HomeScreen</code></td></tr>
+<tr><td><b>useState</b></td><td>Creates one piece of state</td><td>Every screen; e.g. <code>const [email, setEmail] = useState('')</code></td></tr>
+<tr><td><b>useEffect</b></td><td>Runs code after render; returns a cleanup function</td><td>Opening every Firestore listener, and closing it on unmount</td></tr>
+<tr><td><b>useContext</b></td><td>Reads shared state without prop-drilling</td><td><code>useAuth()</code> in <code>AuthContext.tsx</code></td></tr>
+<tr><td><b>useMemo</b></td><td>Caches a computed value</td><td><code>incoming</code> and <code>byId</code> in <code>NetworkScreen</code></td></tr>
+<tr><td><b>useCallback</b></td><td>Keeps a function identity stable</td><td><code>handleToggleLike</code>, <code>handleDelete</code> in <code>HomeScreen</code></td></tr>
+<tr><td><b>Custom hook</b></td><td>Reusable stateful logic</td><td><code>useAuth()</code> — the only one</td></tr>
+<tr><td><b>Navigation</b></td><td>Moving between screens</td><td>React Navigation 7: native stack + bottom tabs</td></tr>
+<tr><td><b>FlatList</b></td><td>Efficient scrolling list; renders only visible rows</td><td>Feed, comments, people, notifications, profile posts</td></tr>
+<tr><td><b>Forms</b></td><td>Controlled text inputs</td><td><code>Input.tsx</code> + <code>value</code>/<code>onChangeText</code> pairs</td></tr>
+<tr><td><b>async / await</b></td><td>Readable asynchronous code</td><td>Every service function</td></tr>
+<tr><td><b>Promise</b></td><td>A value that arrives later</td><td><code>Promise.all()</code> in <code>getLikedPostIds</code> and <code>markAllNotificationsRead</code></td></tr>
+<tr><td><b>Firebase listener</b></td><td>Live server push</td><td><code>onSnapshot</code> (6 places), <code>onAuthStateChanged</code></td></tr>
+<tr><td><b>Error handling</b></td><td>try/catch + user-facing message</td><td><code>describeError()</code> + <code>&lt;ErrorBanner /&gt;</code></td></tr>
+</table></div>
+
+<h3>The most important pattern in the codebase</h3>
+<div class="codewrap"><pre class="solo"><span class="f">useEffect</span>(() =&gt; {
+  <span class="k">const</span> unsubscribe = <span class="f">subscribeToSomething</span>(setData, setError);
+  <span class="k">return</span> unsubscribe;      <span class="c">// ← cleanup runs when the screen unmounts</span>
+}, [dependency]);</pre></div>
+<p>Every Firestore listener follows exactly this shape. Returning <code>unsubscribe</code> from
+<code>useEffect</code> is what closes the connection. Omitting it leaves listeners running after the
+screen closes — the classic React Native memory leak, and it costs real money in Firestore reads.</p>
+
+<h3>Controlled input</h3>
+<div class="codewrap"><pre class="solo"><span class="k">const</span> [email, setEmail] = <span class="f">useState</span>(<span class="s">''</span>);
+
+&lt;Input label=<span class="s">"Email"</span> value={email} onChangeText={setEmail}
+       autoCapitalize=<span class="s">"none"</span> keyboardType=<span class="s">"email-address"</span> /&gt;</pre></div>
+<p>React state is the single source of truth: the field displays <code>email</code>, and typing calls
+<code>setEmail</code>, which re-renders with the new value.</p>
+</section>
+
+<!-- ================= HOW WORKS ================= -->
+<section id="howworks">
+<h2>D. "How does this work?" — 25 questions</h2>
+
+<details><summary>1. How does React Native connect to Firebase?</summary><div class="dbody">
+<p><b>Answer:</b> through the Firebase JS SDK, initialised once in
+<code>src/firebase/app.ts</code>. <code>initializeApp(firebaseConfig)</code> binds the app to project
+<code>linkora-a274a</code>; <code>getAuth</code>, <code>getFirestore</code> and
+<code>getStorage</code> create the three service handles that everything else imports.</p>
+<p><b>Location:</b> <code>src/firebase/app.ts</code>, config from <code>src/config/env.ts</code>.</p>
+<p><b>Flow:</b> <code>.env</code> → <code>env.ts</code> validates → <code>app.ts</code> initialises →
+services import <code>auth</code>/<code>db</code>/<code>storage</code> → screens call services.</p>
+</div></details>
+
+<details><summary>2. How does Firebase Authentication work?</summary><div class="dbody">
+<p>Google stores the email and a hash of the password. On sign-in the app sends the credentials,
+Firebase verifies them and returns an ID token. The token is saved to AsyncStorage so the session
+survives a restart, and it is attached automatically to every Firestore and Storage request — which
+is how the rules know who <code>request.auth.uid</code> is.</p>
+<p><b>Location:</b> <code>src/services/auth.service.ts</code>.</p>
+</div></details>
+
+<details><summary>3. How does registration work?</summary><div class="dbody">
+<p><code>createUserWithEmailAndPassword</code> → <code>updateProfile</code> for the name →
+<code>createUserProfile</code> writes <code>users/{uid}</code> → <code>onAuthStateChanged</code>
+fires → the app swaps to the signed-in navigator. See the Authentication section for the code.</p>
+</div></details>
+
+<details><summary>4. How does login work?</summary><div class="dbody">
+<p><code>signInWithEmailAndPassword(auth, email, password)</code> in
+<code>auth.service.ts</code>. On success the token is persisted and
+<code>onAuthStateChanged</code> drives the UI change. <code>LoginScreen</code> makes no navigation
+call at all.</p>
+</div></details>
+
+<details><summary>5. How does logout work?</summary><div class="dbody">
+<p><code>signOut(auth)</code>, called from <code>SettingsScreen</code> behind an
+<code>Alert.alert</code> confirmation. The stored token is cleared,
+<code>onAuthStateChanged</code> fires with <code>null</code>, and <code>RootNavigator</code> renders
+<code>AuthNavigator</code> again.</p>
+</div></details>
+
+<details><summary>6. How is the logged-in user identified?</summary><div class="dbody">
+<p>By <code>user.uid</code> from Firebase Auth, held in <code>AuthContext</code> and read anywhere
+via <code>const { user, profile } = useAuth()</code>. The same UID is the document ID of
+<code>users/{uid}</code>, which is what ties identity to profile data.</p>
+</div></details>
+
+<details><summary>7. How is a user profile stored?</summary><div class="dbody">
+<p>As a Firestore document at <code>users/{uid}</code>, created once by
+<code>createUserProfile()</code> at registration and updated by <code>updateUserProfile()</code>.
+<code>AuthContext</code> keeps a live <code>onSnapshot</code> listener on it.</p>
+</div></details>
+
+<details><summary>8. How do you create a post?</summary><div class="dbody">
+<p><code>CreatePostScreen</code> collects text and an optional image. If there is an image it is
+uploaded to Storage first, then <code>createPost()</code> calls <code>addDoc(collection(db,
+'posts'), {...})</code> with the returned URL, both counters at 0 and
+<code>serverTimestamp()</code>.</p>
+</div></details>
+
+<details><summary>9. How do you retrieve posts?</summary><div class="dbody">
+<p><code>subscribeToFeed()</code> uses <code>onSnapshot</code> with
+<code>orderBy('createdAt','desc')</code> and <code>limit(50)</code> — a live listener, not a one-off
+read, so new posts arrive by themselves.</p>
+</div></details>
+
+<details><summary>10. How does a like work?</summary><div class="dbody">
+<p>A <code>writeBatch</code> creates <code>posts/{postId}/likes/{yourUid}</code> and applies
+<code>increment(1)</code> to <code>likeCount</code> atomically. The document ID being your UID makes
+double-liking impossible. The heart updates optimistically and rolls back on failure.</p>
+</div></details>
+
+<details><summary>11. How does a comment work?</summary><div class="dbody">
+<p><code>addComment()</code> adds a document under <code>posts/{postId}/comments</code>, increments
+<code>commentCount</code>, and creates a notification for the post author.
+<code>subscribeToComments</code> keeps the list live.</p>
+</div></details>
+
+<details><summary>12. How does a connection request work?</summary><div class="dbody">
+<p><code>setDoc</code> at <code>connections/{sortedPairId}</code> with
+<code>status: 'pending'</code>. The ID comes from <code>connectionIdFor()</code>, which sorts the two
+UIDs — so the pair can only ever have one document.</p>
+</div></details>
+
+<details><summary>13. How do you accept a connection?</summary><div class="dbody">
+<p><code>acceptConnectionRequest()</code> updates <code>status</code> to <code>'accepted'</code>.
+The rule allows this only when <code>request.auth.uid == resource.data.recipientId</code> and only
+for the exact <code>pending → accepted</code> transition.</p>
+</div></details>
+
+<details><summary>14. How does messaging work?</summary><div class="dbody">
+<p><span class="badge b-no">NOT IMPLEMENTED</span></p>
+<p>There is no messaging code in Linkora. <code>conversations</code> and <code>messages</code> exist
+in the planned data model and are explicitly <b>denied</b> in <code>firestore.rules</code>
+(<code>allow read, write: if false</code>) so the unbuilt feature cannot become an unsecured
+collection. There is no Messages screen, no service file and no navigation route.</p>
+</div></details>
+
+<details><summary>15. How are messages stored?</summary><div class="dbody">
+<p><span class="badge b-no">NOT IMPLEMENTED</span> — nothing is stored. The intended design would be
+<code>conversations/{id}</code> with a <code>messages</code> subcollection and a
+<code>members</code> array, mirroring how <code>connections</code> works, but none of it is built.</p>
+</div></details>
+
+<details><summary>16. How are images uploaded?</summary><div class="dbody">
+<p>Permission → <code>launchImageLibraryAsync</code> → local <code>file://</code> URI →
+<code>fetch(uri).blob()</code> → <code>uploadBytes</code> → <code>getDownloadURL</code> → the URL is
+saved in the Firestore document. See the Storage section.</p>
+</div></details>
+
+<details><summary>17. How does Firebase Storage work?</summary><div class="dbody">
+<p>A file bucket addressed by path. Linkora writes only <code>users/{uid}/avatar.jpg</code> and
+<code>posts/{uid}/{timestamp}.jpg</code>. Because every writable path starts with the uploader's UID,
+the rules enforce "your own folder only" with one comparison, plus an image-type check and a 5 MB
+cap.</p>
+</div></details>
+
+<details><summary>18. How are notifications handled?</summary><div class="dbody">
+<p>In-app only. <code>createNotification()</code> writes into
+<code>users/{recipientId}/notifications</code>; <code>NotificationsScreen</code> reads them with a
+live listener. Push/FCM is <span class="badge b-no">NOT IMPLEMENTED</span> because it needs native
+code that does not run in Expo Go.</p>
+</div></details>
+
+<details><summary>19. How does navigation work?</summary><div class="dbody">
+<p>React Navigation 7. <code>RootNavigator</code> picks between <code>AuthNavigator</code> and the
+signed-in stack based on <code>user</code>; <code>MainTabs</code> provides four bottom tabs. Routes
+and their parameters are typed in <code>src/navigation/types.ts</code>.</p>
+</div></details>
+
+<details><summary>20. How do protected screens work?</summary><div class="dbody">
+<p>By <b>not mounting</b> them. When <code>user</code> is <code>null</code> the signed-in stack is not
+rendered at all, so its screens do not exist in the navigation tree and cannot be reached. There is
+no redirect and no route guard anywhere in the codebase.</p>
+</div></details>
+
+<details><summary>21. How do Firestore Security Rules protect data?</summary><div class="dbody">
+<p>They execute on Google's servers on every request, so they apply even if the app is modified or
+the API is called directly. Linkora denies everything by default, requires sign-in everywhere, ties
+writes to <code>request.auth.uid</code>, and restricts <i>which fields</i> a write may touch. See the
+Security section for line-by-line explanations.</p>
+</div></details>
+
+<details><summary>22. How does the app handle Firebase errors?</summary><div class="dbody">
+<p><code>src/utils/errors.ts</code> maps raw codes such as <code>auth/invalid-credential</code> and
+<code>permission-denied</code> to readable sentences; screens catch the error, call
+<code>describeError()</code> and render <code>&lt;ErrorBanner /&gt;</code>. Nothing fails silently and
+nothing shows a raw error code.</p>
+</div></details>
+
+<details><summary>23. How does the app handle no internet?</summary><div class="dbody">
+<p>Firestore's offline cache serves recently-read data and queues writes until the connection
+returns. Listener failures reach <code>onError</code>, which sets a message rather than crashing.
+<code>auth/network-request-failed</code> and <code>unavailable</code> both have friendly mappings in
+<code>errors.ts</code>.</p>
+</div></details>
+
+<details><summary>24. How is data validated?</summary><div class="dbody">
+<p>In two places, deliberately. <b>Client-side</b> for fast feedback:
+<code>looksLikeEmail()</code>, password ≥ 6, passwords match, name ≥ 2 characters, post not empty.
+<b>Server-side</b> in the rules, which is the part that actually matters: <code>text is string</code>,
+length caps of 3000 (posts) and 1000 (comments), counters must start at 0,
+<code>authorId == request.auth.uid</code>. Client checks can be bypassed; rules cannot.</p>
+</div></details>
+
+<details><summary>25. How does the app prevent unauthorised access?</summary><div class="dbody">
+<p>Four layers: (1) unauthenticated users cannot read anything — every rule requires
+<code>isSignedIn()</code>; (2) writes are tied to <code>request.auth.uid</code>; (3) field-level
+restrictions limit even permitted writes; (4) the signed-out UI never mounts the signed-in screens.
+Layers 1–3 are enforced by Google and cannot be bypassed by editing the app.</p>
+</div></details>
+</section>
+
+<!-- ================= SIR ASKED ================= -->
+<section id="sirasked">
+<h2>J. "Sir asked me" — quick revision</h2>
+<p class="lede">Short answer first, then where the code lives, then the fuller explanation.</p>
+
+<div class="card qa">
+<div class="qlabel">Q1 · How does your app connect to Firebase?</div>
+<p class="short"><b>Short:</b> Through the Firebase JS SDK. <code>initializeApp()</code> connects the
+app to my personal project <code>linkora-a274a</code>, and the app then uses Authentication,
+Firestore and Storage through their SDK APIs.</p>
+<p><b>Code:</b> <code>src/firebase/app.ts</code> — <code>initializeApp(firebaseConfig)</code>,
+<code>getAuth</code>, <code>getFirestore</code>, <code>getStorage</code>.</p>
+<p><b>Long:</b> The configuration is read from <code>.env</code> through
+<code>src/config/env.ts</code>, which validates it and refuses to start if it points at any project
+other than <code>linkora-a274a</code>. <code>app.ts</code> then exports <code>auth</code>,
+<code>db</code> and <code>storage</code>, and it is the only file in the project that opens a
+network connection.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q2 · Why did you use Expo instead of bare React Native?</div>
+<p class="short"><b>Short:</b> So it runs on a real phone with no Android Studio, no Xcode and no
+JDK.</p>
+<p><b>Long:</b> Expo Go loads the app over Wi-Fi from the development server. My development machine
+has no Java and no Android SDK installed, and the app still runs on a physical device. The trade-off
+is that native-only modules — including Firebase Cloud Messaging — are unavailable, which is exactly
+why push notifications are not implemented.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q3 · Why the Firebase JS SDK and not @react-native-firebase?</div>
+<p class="short"><b>Short:</b> <code>@react-native-firebase</code> needs native code, which does not
+run in Expo Go.</p>
+<p><b>Long:</b> Choosing the JS SDK keeps the whole project runnable with just Node.js and a phone.
+The cost is losing FCM and some native performance. For a personal project where setup friction was
+the main risk, that was the right trade.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q4 · Where is Firebase initialised, and why only in one file?</div>
+<p class="short"><b>Short:</b> <code>src/firebase/app.ts</code> — so the app's entire network surface
+can be audited by reading one file.</p>
+<p><b>Long:</b> No screen or component imports the Firebase SDK. Screens call
+<code>src/services/</code>, and only those services import <code>auth</code>, <code>db</code> and
+<code>storage</code>. If that one file points only at <code>linkora-a274a</code>, the app cannot be
+talking to anything else.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q5 · How do you keep a user logged in after closing the app?</div>
+<p class="short"><b>Short:</b> <code>getReactNativePersistence(AsyncStorage)</code> passed to
+<code>initializeAuth</code>.</p>
+<p><b>Long:</b> By default the JS SDK keeps the session in memory only, so the user would be signed
+out on every restart. AsyncStorage is the phone's own local storage; the token is written there and
+restored at launch. <code>AuthContext</code> shows a spinner (<code>initialising</code>) while that
+restore happens.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q6 · Why store a user in Firestore when Firebase Auth already has them?</div>
+<p class="short"><b>Short:</b> Auth stores identity only. It cannot store a headline, bio, location
+or photo.</p>
+<p><b>Long:</b> Firebase Auth holds uid, email and the password hash. Everything the app displays
+lives in <code>users/{uid}</code>. The uid is the link. It also means other users can read a profile
+without any access to the Auth system.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q7 · Why is the author's name copied onto every post?</div>
+<p class="short"><b>Short:</b> Denormalisation — it makes the feed one query instead of 51.</p>
+<p><b>Long:</b> Firestore has no JOIN and charges per document read. Storing only
+<code>authorId</code> would mean 50 extra reads to display 50 posts. The trade-off is that renaming
+yourself does not retroactively rename your old posts.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q8 · How do you stop a user liking the same post twice?</div>
+<p class="short"><b>Short:</b> The like document's ID <i>is</i> the liker's UID.</p>
+<p><b>Code:</b> <code>doc(db, 'posts', postId, 'likes', actor.uid)</code></p>
+<p><b>Long:</b> A second like writes to the same document ID, so there is nothing to duplicate. It
+also makes the rule one line — <code>isSelf(likerUid)</code> — and removes the need for a
+"have I already liked this?" query before every write.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q9 · What is a writeBatch and why did you use one?</div>
+<p class="short"><b>Short:</b> It makes several writes succeed or fail together.</p>
+<p><b>Long:</b> Liking a post writes two documents: the like, and the incremented counter. Without a
+batch, one could succeed while the other failed and <code>likeCount</code> would be permanently
+wrong. <code>batch.commit()</code> sends them as one atomic operation.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q10 · What does increment() do that a normal update cannot?</div>
+<p class="short"><b>Short:</b> It adds on the server, atomically.</p>
+<p><b>Long:</b> Reading <code>likeCount</code> and writing <code>n+1</code> is a race: two
+simultaneous likes both read the same number and one is lost. <code>increment(1)</code> is applied
+by Firestore itself, so concurrent likes all count.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q11 · Why is the connection document ID two sorted UIDs?</div>
+<p class="short"><b>Short:</b> So A→B and B→A are the same document.</p>
+<p><b>Code:</b> <code>connectionIdFor()</code> in <code>src/types/index.ts</code>.</p>
+<p><b>Long:</b> A deterministic ID makes duplicate requests impossible by construction, and turns
+"are we connected?" into a direct document read rather than a query.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q12 · What is onSnapshot and how is it different from getDoc?</div>
+<p class="short"><b>Short:</b> <code>getDoc</code> reads once; <code>onSnapshot</code> keeps
+listening.</p>
+<p><b>Long:</b> <code>onSnapshot</code> opens a live channel — Firestore pushes an update whenever a
+matching document changes on any device. It returns an unsubscribe function which must be returned
+from <code>useEffect</code>, otherwise the listener keeps running (and billing) after the screen
+closes. Linkora uses <code>onSnapshot</code> in six places and <code>getDoc</code> where a one-off
+read is enough.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q13 · How are protected screens implemented?</div>
+<p class="short"><b>Short:</b> They are not rendered at all when nobody is signed in.</p>
+<p><b>Long:</b> <code>RootNavigator</code> returns <code>&lt;AuthNavigator /&gt;</code> when
+<code>user</code> is null. The signed-in screens are not in the navigation tree, so they cannot be
+reached by a back gesture or a deep link. No guard code exists.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q14 · How do Firestore Security Rules work?</div>
+<p class="short"><b>Short:</b> They run on Google's servers and are checked on every request.</p>
+<p><b>Long:</b> Rules cannot be bypassed by editing the app, because they are not in the app.
+Linkora's file denies everything by default, requires authentication everywhere, compares
+<code>request.auth.uid</code> to the document being written, and limits which fields a write may
+change using <code>diff().affectedKeys().hasOnly([...])</code>.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q15 · What does request.auth.uid == userId mean?</div>
+<p class="short"><b>Short:</b> Only the authenticated user whose UID matches the document may modify
+it.</p>
+<p><b>Long:</b> <code>request.auth</code> is who is calling, filled in by Firebase from the ID token.
+Because the profile document ID <i>is</i> the user's UID, this comparison means "you can only write
+your own profile". Everyone else gets <code>permission-denied</code>.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q16 · Anyone can like a post — how do you stop them faking a million likes?</div>
+<p class="short"><b>Short:</b> The rule allows a change of exactly ±1, and only to that field.</p>
+<p><b>Long:</b> Non-authors must be able to write <code>likeCount</code>, so the rule restricts
+<i>how much</i> it may change rather than <i>whether</i> it may. Honest limitation: a determined user
+could repeat the ±1 write in a loop. Fully preventing that needs a Cloud Function, which requires the
+paid Blaze plan.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q17 · Is your Firebase API key a secret? Isn't it exposed?</div>
+<p class="short"><b>Short:</b> It is public by design and is not a password.</p>
+<p><b>Long:</b> Firebase client config identifies the project — like a postal address. It ships
+inside every copy of every Firebase app and grants no access on its own. Access is decided by the
+security rules. The variables use an <code>EXPO_PUBLIC_</code> prefix precisely as a reminder that
+they are visible. Real secrets — service-account keys — are never placed in a mobile app, because
+anyone can unpack the bundle.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q18 · Where do you store secrets then?</div>
+<p class="short"><b>Short:</b> Nowhere in the app — a mobile app cannot keep a secret.</p>
+<p><b>Long:</b> There is no Admin SDK and no service-account file in this project.
+<code>.gitignore</code> blocks <code>.env</code>, <code>serviceAccount*.json</code>,
+<code>firebase-adminsdk*.json</code>, keystores and every certificate format. Anything genuinely
+secret would have to live on a server.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q19 · How does your app handle errors?</div>
+<p class="short"><b>Short:</b> <code>describeError()</code> converts Firebase codes into sentences,
+shown in <code>&lt;ErrorBanner /&gt;</code>.</p>
+<p><b>Long:</b> <code>src/utils/errors.ts</code> maps roughly 15 codes across Auth, Firestore and
+Storage. Every service call in a screen is inside <code>try/catch</code>, and listeners pass an
+<code>onError</code> callback. The user sees "Wrong email or password", not
+<code>auth/invalid-credential</code>.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q20 · What happens with no internet?</div>
+<p class="short"><b>Short:</b> Firestore's offline cache serves recent data and queues writes.</p>
+<p><b>Long:</b> Reads come from the local cache; writes are stored and sent when connectivity
+returns. Listener errors surface as a banner. The app does not crash and does not lose the user's
+input.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q21 · Why is there no backend server?</div>
+<p class="short"><b>Short:</b> Firebase provides authentication, database and storage directly to
+the client, with authorisation enforced server-side by rules.</p>
+<p><b>Long:</b> A traditional backend exists largely to hold credentials and enforce authorisation.
+Firestore rules do the authorisation on Google's servers, so a middle tier would add hosting cost,
+deployment work and a second thing to secure without adding safety. The limitation is that logic
+needing true trust — like server-authoritative counters — would require Cloud Functions.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q22 · What is the difference between addDoc and setDoc? You use both.</div>
+<p class="short"><b>Short:</b> <code>addDoc</code> lets Firestore generate the ID;
+<code>setDoc</code> is used when I choose the ID.</p>
+<p><b>Long:</b> Posts and comments use <code>addDoc</code> — the ID is meaningless. Likes use
+<code>setDoc</code> with the liker's UID, and connections use <code>setDoc</code> with the sorted
+pair. In both of those the ID carries meaning and enforces uniqueness.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q23 · Why serverTimestamp() instead of new Date()?</div>
+<p class="short"><b>Short:</b> So the ordering uses Google's clock, not the phone's.</p>
+<p><b>Long:</b> A device with the wrong date could otherwise pin its post to the top of the feed
+forever. One consequence: <code>createdAt</code> is briefly <code>null</code> in the local snapshot
+before the server value arrives, which is why <code>timeAgo()</code> returns "just now" for null.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q24 · What is optimistic UI and where did you use it?</div>
+<p class="short"><b>Short:</b> Update the screen first, undo it if the server refuses. Used for
+likes.</p>
+<p><b>Long:</b> In <code>HomeScreen.handleToggleLike</code> the heart fills immediately, then the
+write runs. If it throws, the state change is reversed and an error banner appears. Without this the
+button would feel laggy on a slow connection.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q25 · Why is there a composite index, and what happens without it?</div>
+<p class="short"><b>Short:</b> Because one query both filters and sorts.</p>
+<p><b>Long:</b> <code>subscribeToUserPosts</code> uses <code>where('authorId','==',uid)</code> plus
+<code>orderBy('createdAt','desc')</code>. Firestore needs a composite index on
+(<code>authorId</code> ASC, <code>createdAt</code> DESC), defined in
+<code>firestore.indexes.json</code>. Without it the query fails with
+<code>failed-precondition</code>, and the error contains a link that creates the index.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q26 · How do you prevent forged notifications?</div>
+<p class="short"><b>Short:</b> The rule requires <code>actorId == request.auth.uid</code>.</p>
+<p><b>Long:</b> Writing into another user's notifications subcollection is allowed — that is how "X
+liked your post" arrives — but the notification must name you as the actor. You cannot create one
+that appears to come from somebody else.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q27 · What is TypeScript giving you here?</div>
+<p class="short"><b>Short:</b> Compile-time checking of Firestore shapes and navigation routes.</p>
+<p><b>Long:</b> <code>src/types/index.ts</code> defines <code>UserProfile</code>,
+<code>Post</code>, <code>Comment</code>, <code>Connection</code>,
+<code>AppNotification</code>. <code>src/navigation/types.ts</code> types every route and its
+parameters, so <code>navigate('PostDetail')</code> without a <code>postId</code> fails to compile
+rather than crashing on the phone. <code>npm run typecheck</code> currently passes with zero errors.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q28 · How would you add messaging?</div>
+<p class="short"><b>Short:</b> A <code>conversations</code> collection with a
+<code>messages</code> subcollection, mirroring how connections work.</p>
+<p><b>Long:</b> Give the conversation a deterministic ID from the two sorted UIDs and a
+<code>members</code> array; rules allow read/write only if <code>request.auth.uid in
+resource.data.members</code>. Add <code>messages.service.ts</code>, a <code>ConversationsScreen</code>
+and a <code>ChatScreen</code> with an <code>onSnapshot</code> listener. The placeholders are already
+denied in the rules, so I would replace <code>if false</code> with the real conditions.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q29 · What are the limitations of the current build?</div>
+<p class="short"><b>Short:</b> No messaging, no jobs, no push notifications, no automated tests, and
+counters are only partly protected.</p>
+<p><b>Long:</b> Every signed-in member can read every profile and post — intended for a network app,
+but there is no private content. Registration is open. Deleting a post removes its likes and
+comments in a client-side loop, which could be interrupted for a very popular post. See the "Not
+implemented" section for the full list.</p>
+</div>
+
+<div class="card qa">
+<div class="qlabel">Q30 · How do you know the app only talks to your own Firebase project?</div>
+<p class="short"><b>Short:</b> One network entry point, a hard-coded project tripwire, and I checked
+the compiled bundle.</p>
+<p><b>Long:</b> <code>src/firebase/app.ts</code> is the only file that opens a connection, and
+<code>assertPersonalFirebaseProject()</code> throws if <code>.env</code> names any project other than
+<code>linkora-a274a</code>. There is exactly one <code>fetch</code> in the codebase and it reads a
+local <code>file://</code> image. Building the Android bundle and searching it for hostnames returns
+only Google's Firebase endpoints. The Settings screen also displays the live project ID on the
+device.</p>
+</div>
+</section>
+
+<!-- ================= NOT IMPLEMENTED ================= -->
+<section id="notimpl">
+<h2>Not implemented — be honest about these</h2>
+
+<div class="tablewrap"><table>
+<tr><th>Feature</th><th>Status</th><th>Reality</th></tr>
+<tr><td>Messaging / conversations</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>No screen, no service, no route. Denied in rules.</td></tr>
+<tr><td>Jobs</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Collection designed and denied in rules; no code.</td></tr>
+<tr><td>Companies</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Same.</td></tr>
+<tr><td>Job applications</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Same.</td></tr>
+<tr><td>Push notifications (FCM)</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Needs native code; unavailable in Expo Go.</td></tr>
+<tr><td>Search</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>No search UI. <code>NetworkScreen</code> lists up to 50 people ordered by name.</td></tr>
+<tr><td>Automated tests</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>No test runner; <code>npm test</code> does not exist.</td></tr>
+<tr><td>Editing a post after publishing</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Rules allow it; no UI calls it.</td></tr>
+<tr><td>Account deletion</td><td><span class="badge b-no">NOT IMPLEMENTED</span></td><td>Rules allow it; no UI calls it.</td></tr>
+</table></div>
+
+<h3>Written but not wired to any screen</h3>
+<p>These functions exist and compile, but no screen calls them. Say so if asked rather than claiming
+the feature works:</p>
+<div class="tablewrap"><table>
+<tr><th>Function</th><th>File</th><th>Status</th></tr>
+<tr><td><code>findUserByEmail()</code></td><td><code>users.service.ts</code></td><td><span class="badge b-dead">UNUSED</span> — would power a "find by email" search</td></tr>
+<tr><td><code>deleteNotification()</code></td><td><code>notifications.service.ts</code></td><td><span class="badge b-dead">UNUSED</span> — no delete button in the UI</td></tr>
+<tr><td><code>currentUser()</code></td><td><code>auth.service.ts</code></td><td><span class="badge b-dead">UNUSED</span> — screens use <code>useAuth()</code> instead</td></tr>
+</table></div>
+</section>
+
+<!-- ================= TROUBLE ================= -->
+<section id="trouble">
+<h2>Troubleshooting</h2>
+
+<details><summary>"Missing environment variable EXPO_PUBLIC_FIREBASE_…"</summary><div class="dbody">
+<p><code>.env</code> is missing, still has placeholders, or the bundler cached old values.
+Environment values are baked in at bundle time, so restart with
+<code>npx expo start --clear</code>.</p></div></details>
+
+<details><summary>"Refusing to start. EXPO_PUBLIC_FIREBASE_PROJECT_ID is …"</summary><div class="dbody">
+<p>The isolation tripwire fired. <code>.env</code> names a Firebase project other than
+<code>linkora-a274a</code>. Fix <code>.env</code>; only edit
+<code>ALLOWED_FIREBASE_PROJECT_ID</code> if you genuinely renamed your own project.</p></div></details>
+
+<details><summary>Firestore "permission denied"</summary><div class="dbody">
+<p>The rules refused the operation — that is them working. Check: are the rules published? Are you
+signed in? Are you writing your <b>own</b> document? Use Firebase console → Firestore → Rules →
+<b>Rules Playground</b> to see which line denies it.</p>
+<div class="bad"><b>Never "fix" this with <code>allow read, write: if true</code>.</b> That opens the
+entire database to the internet.</div></div></details>
+
+<details><summary>"The query requires an index" / failed-precondition</summary><div class="dbody">
+<p>A filter-plus-sort query needs a composite index. The error contains a console link — open it and
+click Create index, or run <code>firebase deploy --only firestore:indexes</code>.</p></div></details>
+
+<details><summary>Storage "unauthorized"</summary><div class="dbody">
+<p>Check <code>storage.rules</code> are published, Storage is enabled, the file is an image under
+5 MB, and <code>EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET</code> matches the console exactly — newer
+projects use <code>.firebasestorage.app</code>, older ones <code>.appspot.com</code>.</p></div></details>
+
+<details><summary>Phone will not connect to the dev server</summary><div class="dbody">
+<p>Both devices must be on the same Wi-Fi. Many office networks block device-to-device traffic — use
+a mobile hotspot or <code>npx expo start --tunnel</code>. Also allow Node.js through Windows
+Firewall on <b>Private</b> networks.</p></div></details>
+
+<details><summary>Metro error / "Unable to resolve module"</summary><div class="dbody">
+<p><code>npx expo start --clear</code> first. If that fails, delete <code>node_modules</code> and run
+<code>npm install</code> again.</p></div></details>
+</section>
+
+<p style="margin-top:44px;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:12.5px">
+Generated from the Linkora source tree. If you change the code, update this guide — a document that
+drifts from the code is worse than no document.
+</p>
+
+</main>
+</div>
+
+<script>
+(function(){
+  // ---------- Theme ----------
+  var root = document.documentElement, btn = document.getElementById('themebtn');
+  var saved = null;
+  try { saved = localStorage.getItem('linkora-theme'); } catch(e){}
+  if (saved) root.setAttribute('data-theme', saved);
+  function paint(){
+    var dark = root.getAttribute('data-theme') === 'dark';
+    btn.textContent = dark ? '☀️ Light' : '🌙 Dark';
+  }
+  paint();
+  btn.addEventListener('click', function(){
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('linkora-theme', next); } catch(e){}
+    paint();
+  });
+
+  // ---------- Copy buttons ----------
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click', function(){
+      var pre = b.closest('.codewrap').querySelector('pre');
+      var text = pre.innerText;
+      function done(){ b.textContent='Copied'; b.classList.add('done');
+        setTimeout(function(){ b.textContent='Copy'; b.classList.remove('done'); },1400); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta=document.createElement('textarea'); ta.value=text;
+        ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  // ---------- Search ----------
+  var input = document.getElementById('search');
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var nohit = document.getElementById('nohit');
+  var note = document.getElementById('searchnote');
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+
+  function clearMarks(el){
+    el.querySelectorAll('mark').forEach(function(m){
+      var p = m.parentNode;
+      p.replaceChild(document.createTextNode(m.textContent), m);
+      p.normalize();
+    });
+  }
+  function highlight(el, term){
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    var nodes = [], n;
+    while ((n = walker.nextNode())) {
+      if (n.parentNode.nodeName === 'SCRIPT' || n.parentNode.nodeName === 'STYLE') continue;
+      if (n.nodeValue.toLowerCase().indexOf(term) !== -1) nodes.push(n);
+    }
+    nodes.slice(0, 400).forEach(function(node){
+      var frag = document.createDocumentFragment(), text = node.nodeValue, low = text.toLowerCase();
+      var i = 0, idx;
+      while ((idx = low.indexOf(term, i)) !== -1) {
+        if (idx > i) frag.appendChild(document.createTextNode(text.slice(i, idx)));
+        var mk = document.createElement('mark');
+        mk.textContent = text.slice(idx, idx + term.length);
+        frag.appendChild(mk);
+        i = idx + term.length;
+      }
+      if (i < text.length) frag.appendChild(document.createTextNode(text.slice(i)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  var timer;
+  input.addEventListener('input', function(){
+    clearTimeout(timer);
+    timer = setTimeout(run, 130);
+  });
+
+  function run(){
+    var term = input.value.trim().toLowerCase();
+    sections.forEach(clearMarks);
+
+    if (term.length < 2) {
+      sections.forEach(function(s){ s.style.display=''; });
+      nohit.style.display='none';
+      note.textContent='Type to filter every section.';
+      return;
+    }
+
+    var hits = 0;
+    sections.forEach(function(s){
+      var match = s.textContent.toLowerCase().indexOf(term) !== -1;
+      s.style.display = match ? '' : 'none';
+      if (match) {
+        hits++;
+        // open collapsed blocks that contain the term
+        s.querySelectorAll('details').forEach(function(d){
+          if (d.textContent.toLowerCase().indexOf(term) !== -1) d.open = true;
+        });
+        highlight(s, term);
+      }
+    });
+
+    nohit.style.display = hits ? 'none' : 'block';
+    note.textContent = hits + ' section' + (hits===1?'':'s') + ' match "' + input.value.trim() + '"';
+  }
+
+  // Escape clears
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { input.value=''; run(); input.blur(); }
+  });
+
+  // ---------- Active nav on scroll ----------
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        var id = en.target.id;
+        navLinks.forEach(function(a){
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      });
+    }, { rootMargin: '-10% 0px -80% 0px' });
+    sections.forEach(function(s){ obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

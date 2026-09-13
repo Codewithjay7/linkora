@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// =============================================================================
+// Linkora — Firebase Storage security rules
+// Project: linkora-a274a
+//
+// Two upload locations only, both keyed by the uploader's own UID:
+//   users/{uid}/avatar.jpg       profile photo
+//   posts/{uid}/{fileName}       image attached to a post
+//
+// Because every writable path begins with the uploader's UID, "you may only
+// write into your own folder" is a single path comparison.
+//
+// Deploy with:  firebase deploy --only storage
+// =============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    /** Caps uploads at 5 MB so a mistake cannot run up a storage bill. */
+    function isReasonableSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    /** Rejects anything that is not an image. */
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // Profile photos.
+    match /users/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSelf(uid) && isImage() && isReasonableSize();
+    }
+
+    // Post images.
+    match /posts/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSelf(uid) && isImage() && isReasonableSize();
+    }
+
+    // Everything else is denied. Never delete this block.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

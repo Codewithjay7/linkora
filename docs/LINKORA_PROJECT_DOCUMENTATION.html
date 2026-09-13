@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linkora — Project Documentation</title>
+<style>
+:root{
+  --ink:#14181f; --body:#2b323c; --muted:#5f6874; --line:#dde2e8;
+  --brand:#0a66c2; --brand-dark:#004182; --soft:#eef4fb; --paper:#fff; --bg:#eceff3;
+  --ok:#0e7c3a; --no:#b42318; --warnbg:#fff8e6; --warnline:#d29922;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--body);
+  font:15px/1.7 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;}
+code,pre{font-family:ui-monospace,Consolas,"Liberation Mono",Menlo,monospace}
+
+.sheet{max-width:940px;margin:0 auto;background:var(--paper);
+  box-shadow:0 0 0 1px var(--line),0 10px 40px rgba(0,0,0,.06)}
+.pad{padding:52px 62px}
+@media(max-width:760px){ .pad{padding:30px 22px} }
+
+/* ---------- Cover ---------- */
+.cover{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-dark) 100%);
+  color:#fff;padding:78px 62px;text-align:center}
+.cover .mark{width:70px;height:70px;border-radius:18px;background:rgba(255,255,255,.16);
+  display:inline-grid;place-items:center;font-size:34px;font-weight:800;margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.3)}
+.cover h1{font-size:56px;margin:0;letter-spacing:7px;font-weight:800}
+.cover .sub{font-size:19px;margin-top:10px;opacity:.95;font-weight:500}
+.cover .tag{font-size:15px;margin-top:6px;opacity:.8;font-style:italic}
+.cover .rule{width:80px;height:3px;background:rgba(255,255,255,.55);margin:26px auto;border-radius:2px}
+.cover .stack{font-size:15px;opacity:.95}
+.cover table{margin:30px auto 0;border-collapse:collapse;font-size:13.5px;text-align:left;
+  background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.cover td{padding:9px 18px;border-bottom:1px solid rgba(255,255,255,.16)}
+.cover td:first-child{font-weight:700;opacity:.85;white-space:nowrap}
+.cover tr:last-child td{border-bottom:none}
+
+/* ---------- Typography ---------- */
+h2{font-size:23px;color:var(--ink);margin:52px 0 14px;padding-bottom:9px;
+  border-bottom:3px solid var(--brand);letter-spacing:-.3px}
+h2 .num{color:var(--brand);font-weight:800;margin-right:9px}
+h3{font-size:17px;color:var(--ink);margin:28px 0 8px}
+h4{font-size:14px;color:var(--muted);margin:20px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+p{margin:10px 0}
+ul,ol{padding-left:23px}
+li{margin:5px 0}
+a{color:var(--brand)}
+blockquote{border-left:4px solid var(--brand);background:var(--soft);margin:16px 0;
+  padding:12px 18px;border-radius:0 8px 8px 0;font-size:14px}
+blockquote p{margin:5px 0}
+
+/* ---------- TOC ---------- */
+.toc{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:26px 0}
+.toc h3{margin-top:0}
+.toc ol{columns:2;column-gap:34px;margin:0;font-size:14px}
+@media(max-width:700px){ .toc ol{columns:1} }
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+
+/* ---------- Tables ---------- */
+.tw{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f6f8fa;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);font-weight:700;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:#fbfcfd}
+
+/* ---------- Code & diagrams ---------- */
+pre{background:#1e2430;color:#e6edf3;padding:15px 18px;border-radius:9px;
+  overflow-x:auto;font-size:12.6px;line-height:1.6;margin:14px 0}
+code:not(pre code){background:#f2f4f7;border:1px solid var(--line);padding:1px 5px;
+  border-radius:4px;font-size:12.5px;color:var(--ink)}
+.diagram{background:#f7f9fb;border:1px solid var(--line);border-left:4px solid var(--brand);
+  padding:15px 18px;border-radius:0 9px 9px 0;overflow-x:auto;white-space:pre;
+  font-family:ui-monospace,Consolas,monospace;font-size:12.4px;line-height:1.55;margin:14px 0;
+  color:var(--ink)}
+
+/* ---------- Badges & callouts ---------- */
+.b{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:800;
+  letter-spacing:.04em}
+.b-ok{background:#e3f5ea;color:var(--ok)}
+.b-no{background:#fdecea;color:var(--no)}
+.b-pend{background:#fff4e0;color:#8a5a00}
+.warnbox{background:var(--warnbg);border:1px solid #f0dcae;border-left:4px solid var(--warnline);
+  padding:13px 18px;border-radius:0 9px 9px 0;margin:16px 0;font-size:14px}
+.keybox{background:var(--soft);border:1px solid #cfe0f2;border-radius:10px;padding:16px 20px;margin:18px 0}
+.keybox h4{margin-top:0;color:var(--brand)}
+
+/* ---------- Q&A ---------- */
+.q{margin:18px 0;padding:16px 20px;background:#fafbfc;border:1px solid var(--line);border-radius:10px}
+.q .qq{font-weight:700;color:var(--ink);font-size:15px;margin-bottom:6px}
+.q .qq span{color:var(--brand);margin-right:7px}
+
+/* ---------- Footer ---------- */
+.foot{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 20px 44px;
+  border-top:1px solid var(--line);margin-top:44px}
+
+/* ---------- Print ---------- */
+@media print{
+  body{background:#fff}
+  .sheet{box-shadow:none;max-width:none}
+  .pad{padding:0 12mm}
+  .cover{padding:60mm 20mm;page-break-after:always;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2{page-break-after:avoid;break-after:avoid}
+  table,pre,.diagram,.q,.keybox{page-break-inside:avoid;break-inside:avoid}
+  th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .noprint{display:none}
+  a{color:var(--ink);text-decoration:none}
+  @page{margin:16mm}
+}
+/* ---------- Mockup gallery ---------- */
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px;margin:20px 0}
+.shots figure{margin:0;text-align:center}
+.shots img{width:100%;max-width:210px;height:auto;border-radius:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.09),0 12px 28px rgba(0,0,0,.07)}
+.shots figcaption{margin-top:9px;font-size:12.5px;font-weight:700;color:var(--ink)}
+@media print{ .shots{grid-template-columns:repeat(3,1fr);gap:12px}
+  .shots img{box-shadow:none;border:1px solid var(--line)} }
+
+.printbtn{position:fixed;right:18px;bottom:18px;background:var(--brand);color:#fff;border:none;
+  border-radius:99px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 14px rgba(10,102,194,.35)}
+.printbtn:hover{background:var(--brand-dark)}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- ================= COVER ================= -->
+<div class="cover">
+  <div class="mark">L</div>
+  <h1>LINKORA</h1>
+  <div class="sub">Professional Networking &amp; Career Platform</div>
+  <div class="tag">"Connect. Grow. Succeed."</div>
+  <div class="rule"></div>
+  <div class="stack"><b>React Native (Expo)</b> &nbsp;+&nbsp; <b>Firebase</b></div>
+  <table>
+    <tr><td>Project</td><td>Linkora</td></tr>
+    <tr><td>Version</td><td>1.0.0</td></tr>
+    <tr><td>Date</td><td>5 September 2026</td></tr>
+    <tr><td>Developer</td><td><i>[Your name]</i></td></tr>
+    <tr><td>Institution / Guide</td><td><i>[To be filled in]</i></td></tr>
+    <tr><td>Platforms</td><td>Android · iOS</td></tr>
+    <tr><td>Backend</td><td>Firebase — project <code style="color:#fff;background:rgba(255,255,255,.15);border:none">linkora-a274a</code></td></tr>
+  </table>
+</div>
+
+<div class="pad">
+
+<!-- ================= TOC ================= -->
+<div class="toc">
+<h3>Contents</h3>
+<ol>
+<li><a href="#s1">Executive summary</a></li>
+<li><a href="#s2">Problem statement</a></li>
+<li><a href="#s3">Objectives</a></li>
+<li><a href="#s4">Proposed solution</a></li>
+<li><a href="#s5">Features</a></li>
+<li><a href="#s6">Technology stack</a></li>
+<li><a href="#s7">System architecture</a></li>
+<li><a href="#s8">Application workflow</a></li>
+<li><a href="#s9">Database design</a></li>
+<li><a href="#s10">Authentication design</a></li>
+<li><a href="#s11">Security</a></li>
+<li><a href="#s12">UI / UX — screens</a></li>
+<li><a href="#s13">Firebase services used</a></li>
+<li><a href="#s14">Data flow</a></li>
+<li><a href="#s15">Testing</a></li>
+<li><a href="#s16">Error handling</a></li>
+<li><a href="#s17">Performance</a></li>
+<li><a href="#s18">Infrastructure independence</a></li>
+<li><a href="#s19">Installation guide</a></li>
+<li><a href="#s20">Running the application</a></li>
+<li><a href="#s21">Deployment</a></li>
+<li><a href="#s22">Future enhancements</a></li>
+<li><a href="#s23">Conclusion</a></li>
+<li><a href="#s24">Viva / presentation questions</a></li>
+</ol>
+</div>
+
+<!-- 1 -->
+<h2 id="s1"><span class="num">1.</span>Executive summary</h2>
+<p>Linkora is a cross-platform mobile application for professional networking. A user creates an
+account, maintains a professional profile, publishes updates to a shared feed, engages with other
+members' content through likes and comments, and builds a network through connection requests.</p>
+<p>The application is built with <b>React Native</b> using the <b>Expo</b> toolchain, and uses
+<b>Firebase</b> as a complete serverless backend. There is no custom API server: the mobile client
+communicates directly with Firebase Authentication, Cloud Firestore and Firebase Storage over HTTPS,
+with all authorisation enforced server-side by Firebase Security Rules.</p>
+<p>The current build implements authentication, profiles, the feed, posts with images, likes,
+comments, connections, in-app notifications and settings. Jobs, job applications, direct messaging
+and push notifications are designed but <b>not implemented</b>; they are documented as such
+throughout rather than presented as working features.</p>
+<p>A defining constraint of this project is <b>infrastructure independence</b>: Linkora is a personal
+application, architected so that it cannot depend on any employer or organisational infrastructure.
+This is enforced in code, not merely stated as policy — see §18.</p>
+
+<!-- 2 -->
+<h2 id="s2"><span class="num">2.</span>Problem statement</h2>
+<p>Professional networking platforms are centralised. A user's profile, posts, connections and
+message history are held by a third-party company under terms the user does not control.</p>
+<ol>
+<li><b>No data ownership.</b> The user cannot export, inspect or delete their own data on their own terms.</li>
+<li><b>Opaque ranking.</b> Feed content is decided by an algorithm optimised for the platform's engagement metrics.</li>
+<li><b>Advertising and profiling.</b> Professional data is monetised for targeted advertising.</li>
+<li><b>Platform dependency.</b> If the account is suspended, the professional network is lost.</li>
+</ol>
+<p>A secondary problem motivated the specific architecture. When a personal application is developed
+on a workstation that also has access to organisational systems, there is a real risk of
+<b>accidental infrastructure coupling</b> — a hardcoded internal URL, a shared connection string, a
+corporate proxy setting, or a service account committed to the repository. Such coupling creates both
+a security exposure for the organisation and a functional dependency that breaks the personal
+application the moment it leaves the corporate network.</p>
+
+<!-- 3 -->
+<h2 id="s3"><span class="num">3.</span>Objectives</h2>
+<h4>Primary</h4>
+<ol>
+<li>Build a functional cross-platform networking application from a single codebase.</li>
+<li>Implement secure authentication where the application never stores or handles passwords.</li>
+<li>Design a Firestore model for profiles, posts, likes, comments, connections and notifications.</li>
+<li>Enforce authorisation on the server through Security Rules, not in client code.</li>
+<li>Provide realtime updates so content appears without manual refresh.</li>
+<li>Support image upload with server-enforced type and size limits.</li>
+</ol>
+<h4>Architectural</h4>
+<ol start="7">
+<li>Confine all network access to a single auditable module.</li>
+<li>Guarantee the application connects to exactly one Firebase project, verifiably.</li>
+<li>Ensure it runs on any personal device and ordinary internet connection, with no dependency on
+organisational network, VPN, servers, databases or credentials.</li>
+</ol>
+<h4>Engineering</h4>
+<ol start="10">
+<li>Use TypeScript so data shapes and navigation routes are checked at compile time.</li>
+<li>Keep the toolchain minimal enough to run without Android Studio, Xcode or a JDK.</li>
+</ol>
+
+<!-- 4 -->
+<h2 id="s4"><span class="num">4.</span>Proposed solution</h2>
+<p>Linkora addresses the problem through a <b>serverless, client-direct architecture</b> on
+infrastructure owned by the individual developer.</p>
+<div class="tw"><table>
+<tr><th>Problem</th><th>How Linkora addresses it</th></tr>
+<tr><td>No data ownership</td><td>All data resides in a Firebase project owned by the developer's personal Google account.</td></tr>
+<tr><td>Opaque ranking</td><td>The feed is strictly reverse-chronological (<code>orderBy('createdAt','desc')</code>). No ranking algorithm exists.</td></tr>
+<tr><td>Advertising and profiling</td><td>No analytics SDK, crash reporter, advertising library or third-party tracker is present in the dependency tree.</td></tr>
+<tr><td>Platform dependency</td><td>The owner controls the project; no external moderator can suspend the account.</td></tr>
+<tr><td>Accidental infrastructure coupling</td><td>Enforced in code: a single network entry point, a hardcoded project allow-list that halts the app on mismatch, and a verifiable bundle.</td></tr>
+</table></div>
+<div class="keybox">
+<h4>Why serverless</h4>
+<p>A conventional three-tier design exists largely to hold credentials and enforce authorisation away
+from the client. Firebase Security Rules perform authorisation on Google's servers on every request.
+A middle tier would therefore add hosting cost, deployment complexity and an additional attack
+surface without adding a guarantee the rules do not already provide.</p>
+</div>
+
+<!-- 5 -->
+<h2 id="s5"><span class="num">5.</span>Features</h2>
+<h3>5.1 Implemented <span class="b b-ok">WORKING</span></h3>
+<div class="tw"><table>
+<tr><th>Feature</th><th>Description</th><th>Implementation</th></tr>
+<tr><td>Registration</td><td>Email + password sign-up; creates Auth record and Firestore profile</td><td><code>auth.service.ts → register()</code></td></tr>
+<tr><td>Login</td><td>Email + password authentication</td><td><code>auth.service.ts → login()</code></td></tr>
+<tr><td>Persistent session</td><td>User stays signed in after closing the app</td><td><code>getReactNativePersistence(AsyncStorage)</code></td></tr>
+<tr><td>Password reset</td><td>Reset email sent by Firebase</td><td><code>requestPasswordReset()</code></td></tr>
+<tr><td>Logout</td><td>With confirmation dialog</td><td><code>SettingsScreen → logout()</code></td></tr>
+<tr><td>User profile</td><td>Name, headline, location, bio, photo</td><td><code>users.service.ts</code>, Profile/EditProfile screens</td></tr>
+<tr><td>Profile photo upload</td><td>Gallery image stored in Firebase Storage</td><td><code>uploadAvatar()</code></td></tr>
+<tr><td>Home feed</td><td>Realtime reverse-chronological, 50 most recent</td><td><code>subscribeToFeed()</code></td></tr>
+<tr><td>Create post</td><td>Text (≤3000 chars) with optional image</td><td><code>createPost()</code></td></tr>
+<tr><td>Delete post</td><td>Author only; removes likes and comments first</td><td><code>deletePostCompletely()</code></td></tr>
+<tr><td>Likes</td><td>One per user per post, atomic counter</td><td><code>likePost()</code> / <code>unlikePost()</code></td></tr>
+<tr><td>Comments</td><td>Realtime thread per post</td><td><code>comments.service.ts</code></td></tr>
+<tr><td>Delete comment</td><td>Comment author or post author</td><td><code>deleteComment()</code></td></tr>
+<tr><td>Connections</td><td>Send / accept / remove requests</td><td><code>connections.service.ts</code></td></tr>
+<tr><td>People directory</td><td>Up to 50 members, ordered by name</td><td><code>listOtherUsers()</code></td></tr>
+<tr><td>In-app notifications</td><td>Like, comment, request, accepted</td><td><code>notifications.service.ts</code></td></tr>
+<tr><td>Other user profiles</td><td>View any member and their posts</td><td><code>UserProfileScreen</code></td></tr>
+<tr><td>Settings</td><td>Account details plus live backend identification</td><td><code>SettingsScreen</code></td></tr>
+</table></div>
+
+<h3>5.2 Not implemented</h3>
+<div class="tw"><table>
+<tr><th>Feature</th><th>Status</th><th>Reason</th></tr>
+<tr><td>Direct messaging</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>No screen, service or route. <code>conversations</code>/<code>messages</code> denied in rules.</td></tr>
+<tr><td>Jobs</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>Collection designed and denied in rules; no code.</td></tr>
+<tr><td>Companies</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>As above.</td></tr>
+<tr><td>Job applications</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>As above.</td></tr>
+<tr><td>Push notifications (FCM)</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>Needs native modules unavailable in Expo Go, plus a server to send messages.</td></tr>
+<tr><td>Search</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>No search UI. <code>findUserByEmail()</code> exists but no screen calls it.</td></tr>
+<tr><td>Post editing</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>Permitted by rules; no UI.</td></tr>
+<tr><td>Account deletion</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>Permitted by rules; no UI.</td></tr>
+<tr><td>Automated tests</td><td><span class="b b-no">NOT IMPLEMENTED</span></td><td>No test runner; <code>npm test</code> does not exist.</td></tr>
+</table></div>
+<div class="warnbox"><b>Unused code, stated honestly.</b> Three functions are defined but called by
+no screen: <code>findUserByEmail()</code>, <code>deleteNotification()</code> and
+<code>currentUser()</code>. They compile and are typed, but they do not represent working features.</div>
+
+<!-- 6 -->
+<h2 id="s6"><span class="num">6.</span>Technology stack</h2>
+<div class="tw"><table>
+<tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+<tr><td>Language</td><td>TypeScript</td><td>6.0.3</td><td>Typed application code</td></tr>
+<tr><td>UI framework</td><td>React</td><td>19.2.3</td><td>Component model</td></tr>
+<tr><td>Mobile framework</td><td>React Native</td><td>0.86.3</td><td>Native rendering on Android and iOS</td></tr>
+<tr><td>Toolchain</td><td>Expo SDK</td><td>57.0.20</td><td>Build, run and device delivery without native IDEs</td></tr>
+<tr><td>Backend SDK</td><td>Firebase JS SDK</td><td>12.18.0</td><td>Auth, Firestore, Storage clients</td></tr>
+<tr><td>Authentication</td><td>Firebase Authentication</td><td>—</td><td>Email/password identity</td></tr>
+<tr><td>Database</td><td>Cloud Firestore</td><td>—</td><td>Document database with realtime listeners</td></tr>
+<tr><td>File storage</td><td>Firebase Storage</td><td>—</td><td>Profile and post images</td></tr>
+<tr><td>Navigation</td><td>React Navigation</td><td>7.x</td><td>Native stack + bottom tabs</td></tr>
+<tr><td>Local storage</td><td>AsyncStorage</td><td>2.2.0</td><td>Session persistence</td></tr>
+<tr><td>Media</td><td>expo-image-picker</td><td>57.0.16</td><td>Gallery access</td></tr>
+<tr><td>Screen primitives</td><td>react-native-screens</td><td>4.26.0</td><td>Native screen containers</td></tr>
+<tr><td>Safe areas</td><td>react-native-safe-area-context</td><td>5.7.0</td><td>Notch / home-indicator insets</td></tr>
+</table></div>
+<p><b>Notably absent by design:</b> no analytics SDK, no crash reporting, no advertising library, no
+HTTP client such as <code>axios</code>, no state-management library, no backend framework, and no SQL
+or NoSQL server other than Firestore.</p>
+<div class="keybox">
+<h4>Justification of key choices</h4>
+<p><b>React Native + Expo.</b> One codebase targets both platforms. Expo was chosen over bare React
+Native because it allows the application to run on a physical device through Expo Go without Android
+Studio, Xcode or a JDK — the development machine used for this project has none of these installed.</p>
+<p><b>Firebase JS SDK over <code>@react-native-firebase</code>.</b> The React Native Firebase library
+requires native modules and therefore a custom development build. The JS SDK runs inside Expo Go. The
+accepted trade-off is the loss of Firebase Cloud Messaging, which is the direct reason push
+notifications are not implemented.</p>
+</div>
+
+<!-- 7 -->
+<h2 id="s7"><span class="num">7.</span>System architecture</h2>
+<h3>7.1 Layered architecture</h3>
+<div class="diagram">┌──────────────────────────────────────────────────────────┐
+│  PRESENTATION                                            │
+│  src/screens/ (10)      src/components/ (6)              │
+└───────────────────────────┬──────────────────────────────┘
+┌───────────────────────────▼──────────────────────────────┐
+│  NAVIGATION                                              │
+│  RootNavigator · AuthNavigator · MainTabs · types.ts     │
+└───────────────────────────┬──────────────────────────────┘
+┌───────────────────────────▼──────────────────────────────┐
+│  STATE                                                   │
+│  src/context/AuthContext.tsx  → useAuth()                │
+└───────────────────────────┬──────────────────────────────┘
+┌───────────────────────────▼──────────────────────────────┐
+│  SERVICE / DATA ACCESS                                   │
+│  auth · users · posts · comments · connections ·         │
+│  notifications · storage                                 │
+└───────────────────────────┬──────────────────────────────┘
+┌───────────────────────────▼──────────────────────────────┐
+│  BACKEND CONNECTION      ← the ONLY network entry point  │
+│  src/firebase/app.ts  ·  src/config/env.ts               │
+└───────────────────────────┬──────────────────────────────┘
+                            │  HTTPS
+┌───────────────────────────▼──────────────────────────────┐
+│  FIREBASE — project linkora-a274a                        │
+│  Authentication  ·  Cloud Firestore  ·  Storage          │
+└──────────────────────────────────────────────────────────┘</div>
+<p>Dependencies point downward only. No service imports a screen; no screen imports the Firebase SDK.</p>
+
+<h3>7.2 Client–backend communication</h3>
+<div class="diagram">User
+ ↓
+React Native UI
+ ↓
+Navigation
+ ↓
+Services / Context
+ ↓
+Firebase SDK
+ ↓
+Firebase Authentication / Firestore / Storage
+ ↓
+Linkora Firebase project (linkora-a274a)</div>
+<p>There is no REST API, no GraphQL endpoint and no custom server. Every operation is an SDK call
+that becomes an authenticated HTTPS request to a Google endpoint, carrying the user's Firebase ID
+token. That token is what populates <code>request.auth</code> in the security rules.</p>
+
+<h3>7.3 Project structure</h3>
+<div class="diagram">Linkora/
+├── App.tsx · index.ts · app.json · package.json · tsconfig.json
+├── .env.example · .gitignore
+├── firebase.json · firestore.rules · firestore.indexes.json · storage.rules
+├── assets/ · docs/
+└── src/
+    ├── components/   Avatar · Button · EmptyState · ErrorBanner · Input · PostCard
+    ├── config/       env.ts
+    ├── context/      AuthContext.tsx
+    ├── firebase/     app.ts
+    ├── navigation/   RootNavigator · AuthNavigator · MainTabs · types.ts
+    ├── screens/      10 screens (2 under auth/)
+    ├── services/     7 service modules
+    ├── theme/ · types/ · utils/</div>
+
+<!-- 8 -->
+<h2 id="s8"><span class="num">8.</span>Application workflow</h2>
+<h3>First launch</h3>
+<div class="diagram">App.tsx
+  → SafeAreaProvider
+  → AuthProvider          subscribes to onAuthStateChanged
+  → RootNavigator         shows a spinner while initialising
+
+    ├── no saved session  → AuthNavigator → LoginScreen
+    └── saved session     → MainTabs → HomeScreen</div>
+<h3>Registration</h3>
+<div class="diagram">RegisterScreen
+  → client validation (name ≥ 2, valid email, password ≥ 6, passwords match)
+  → register()
+      → createUserWithEmailAndPassword()      Firebase Auth
+      → updateProfile({ displayName })        Firebase Auth
+      → createUserProfile()                   Firestore users/{uid}
+  → onAuthStateChanged fires
+  → AuthProvider sets user, opens profile listener
+  → RootNavigator renders MainTabs</div>
+<h3>Posting</h3>
+<div class="diagram">HomeScreen "+ Post" → CreatePostScreen
+  → (optional) permission → launchImageLibraryAsync
+  → (optional) uploadPostImage() → Storage → download URL
+  → createPost() → addDoc(posts)
+  → feed listener pushes the new post to every signed-in device</div>
+<h3>Engagement</h3>
+<div class="diagram">Like     → writeBatch{ set(likes/{uid}), update(likeCount +1) } → notification
+Comment  → addDoc(comments) → update(commentCount +1)           → notification
+Connect  → setDoc(connections/{sortedPair}, 'pending')          → notification
+Accept   → updateDoc(status 'accepted')                         → notification</div>
+
+<!-- 9 -->
+<h2 id="s9"><span class="num">9.</span>Database design</h2>
+<div class="diagram">users/{uid}
+  └── notifications/{notificationId}
+
+posts/{postId}
+  ├── likes/{likerUid}
+  └── comments/{commentId}
+
+connections/{connectionId}          id = sorted(uidA, uidB).join('_')
+
+── designed but NOT IMPLEMENTED ──
+jobs/{jobId} · companies/{companyId} · applications/{applicationId}
+conversations/{conversationId}/messages/{messageId}</div>
+
+<h3>9.1 <code>users/{uid}</code></h3>
+<div class="tw"><table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>uid</code></td><td>string</td><td>Equals the document ID</td></tr>
+<tr><td><code>email</code></td><td>string</td><td>Sign-in address</td></tr>
+<tr><td><code>displayName</code></td><td>string</td><td>Full name</td></tr>
+<tr><td><code>headline</code></td><td>string</td><td>One-line professional description</td></tr>
+<tr><td><code>bio</code></td><td>string</td><td>Extended description</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>City / country</td></tr>
+<tr><td><code>photoURL</code></td><td>string</td><td>Storage download URL, or empty</td></tr>
+<tr><td><code>createdAt</code> / <code>updatedAt</code></td><td>timestamp</td><td><code>serverTimestamp()</code></td></tr>
+</table></div>
+<p><b>Create:</b> owner, at registration. <b>Read:</b> any authenticated user. <b>Update:</b> owner
+only, restricted to presentation fields — <code>email</code> and <code>uid</code> are immutable from
+the client. <b>Delete:</b> owner (no UI).</p>
+
+<h3>9.2 <code>posts/{postId}</code></h3>
+<div class="tw"><table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>authorId</code></td><td>string</td><td>Author UID</td></tr>
+<tr><td><code>authorName</code> / <code>authorHeadline</code> / <code>authorPhotoURL</code></td><td>string</td><td>Denormalised author data</td></tr>
+<tr><td><code>text</code></td><td>string</td><td>Body, ≤ 3000 characters</td></tr>
+<tr><td><code>imageUrl</code></td><td>string</td><td>Storage URL, or empty</td></tr>
+<tr><td><code>likeCount</code> / <code>commentCount</code></td><td>number</td><td>Maintained by <code>increment()</code></td></tr>
+<tr><td><code>createdAt</code></td><td>timestamp</td><td><code>serverTimestamp()</code></td></tr>
+</table></div>
+<div class="keybox"><h4>Design note — denormalisation</h4>
+<p>Author name, headline and photo are copied onto each post. Firestore has no join operation and
+bills per document read; storing only <code>authorId</code> would require 50 additional reads to
+render a 50-post feed. The cost is that a renamed user's historical posts retain the previous name.</p></div>
+
+<h3>9.3 <code>posts/{postId}/likes/{likerUid}</code></h3>
+<p>Fields: <code>uid</code> (string), <code>createdAt</code> (timestamp).</p>
+<div class="keybox"><h4>Design note — identity as key</h4>
+<p>The document ID is the liker's UID. This makes duplicate likes structurally impossible, removes
+the need for a pre-write existence query, and reduces the authorisation rule to a single identity
+comparison.</p></div>
+
+<h3>9.4 <code>posts/{postId}/comments/{commentId}</code></h3>
+<p>Fields: <code>authorId</code>, <code>authorName</code>, <code>authorPhotoURL</code>,
+<code>text</code> (1–1000 characters), <code>createdAt</code>. Deletable by the comment author
+<b>or</b> the post author.</p>
+
+<h3>9.5 <code>connections/{connectionId}</code></h3>
+<div class="tw"><table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>members</code></td><td>array[2] string</td><td>Both UIDs, sorted</td></tr>
+<tr><td><code>requesterId</code></td><td>string</td><td>Initiator</td></tr>
+<tr><td><code>recipientId</code></td><td>string</td><td>Recipient</td></tr>
+<tr><td><code>status</code></td><td>string</td><td><code>'pending'</code> | <code>'accepted'</code></td></tr>
+<tr><td><code>createdAt</code> / <code>updatedAt</code></td><td>timestamp</td><td><code>serverTimestamp()</code></td></tr>
+</table></div>
+<div class="keybox"><h4>Design note — deterministic identifier</h4>
+<p><code>connectionIdFor(a, b)</code> sorts the two UIDs and joins them with <code>_</code>. Because
+A→B and B→A produce the same identifier, a duplicate connection cannot be created, and relationship
+lookup is a direct document read rather than a query.</p></div>
+
+<h3>9.6 <code>users/{uid}/notifications/{notificationId}</code></h3>
+<p>Fields: <code>recipientId</code>, <code>actorId</code>, <code>actorName</code>,
+<code>actorPhotoURL</code>, <code>type</code> (<code>like</code> | <code>comment</code> |
+<code>connection_request</code> | <code>connection_accepted</code>), <code>targetPostId</code>,
+<code>read</code>, <code>createdAt</code>.</p>
+<p>Modelled as a subcollection so ownership is expressed by path. Other users may create documents
+here — that is how notifications are delivered — but the rule requires
+<code>actorId == request.auth.uid</code>, preventing forged notifications.</p>
+
+<h3>9.7 Index</h3>
+<div class="tw"><table>
+<tr><th>Collection</th><th>Fields</th><th>Required by</th></tr>
+<tr><td><code>posts</code></td><td><code>authorId</code> ASC, <code>createdAt</code> DESC</td><td><code>subscribeToUserPosts()</code></td></tr>
+</table></div>
+<p>All other queries are satisfied by Firestore's automatic single-field indexes.</p>
+
+<!-- 10 -->
+<h2 id="s10"><span class="num">10.</span>Authentication design</h2>
+<p><b>Method:</b> Firebase Authentication, email + password only. Deliberately excluded:
+organisational SSO, LDAP, Active Directory, SAML and third-party social providers — an isolation
+requirement as much as a scope decision.</p>
+<div class="tw"><table>
+<tr><th>Store</th><th>Holds</th><th>Managed by</th></tr>
+<tr><td>Firebase Authentication</td><td>UID, email, password hash</td><td>Google</td></tr>
+<tr><td>Firestore <code>users/{uid}</code></td><td>Name, headline, bio, location, photo</td><td>The application</td></tr>
+</table></div>
+<p><b>The application never receives, stores or transmits a password to its own storage.</b>
+Credentials pass directly from the client SDK to Google's authentication endpoint.</p>
+<h3>Session management</h3>
+<p><code>initializeAuth()</code> is configured with
+<code>getReactNativePersistence(AsyncStorage)</code>. Firebase writes the ID token to the device's
+local storage and restores it at launch. <code>AuthContext</code> exposes an
+<code>initialising</code> flag so the UI shows a spinner rather than briefly flashing the login
+screen during restore.</p>
+<div class="diagram">onAuthStateChanged  →  AuthContext.user
+                              ↓
+                    RootNavigator re-renders
+                              ↓
+       signed in → main stack     |     signed out → AuthNavigator</div>
+<p>No screen performs manual navigation after login or logout.</p>
+
+<!-- 11 -->
+<h2 id="s11"><span class="num">11.</span>Security</h2>
+<div class="keybox"><h4>The central principle</h4>
+<p>Authorisation is enforced <b>on Google's servers</b> by Firebase Security Rules. They apply to
+every request regardless of whether it originates from the official application, a modified build, or
+a direct API call from a script. Client-side checks in Linkora exist only for feedback speed; they
+are not a security control.</p></div>
+
+<h3>11.1 Principles applied</h3>
+<div class="tw"><table>
+<tr><th>Principle</th><th>Implementation</th></tr>
+<tr><td>Deny by default</td><td>File terminates with <code>match /{document=**} { allow read, write: if false; }</code></td></tr>
+<tr><td>No test mode</td><td><code>allow read, write: if true</code> appears nowhere in the file</td></tr>
+<tr><td>Authentication required</td><td>Every rule requires <code>isSignedIn()</code></td></tr>
+<tr><td>Ownership</td><td>Writes compare <code>request.auth.uid</code> to the document ID or <code>authorId</code></td></tr>
+<tr><td>Field-level restriction</td><td><code>diff(resource.data).affectedKeys().hasOnly([...])</code></td></tr>
+<tr><td>Value-level restriction</td><td>Counter updates constrained to exactly ±1</td></tr>
+<tr><td>Unbuilt features locked</td><td><code>jobs</code>, <code>companies</code>, <code>applications</code>, <code>conversations</code>, <code>messages</code> explicitly denied</td></tr>
+</table></div>
+
+<h3>11.2 Representative rules</h3>
+<h4>Profile ownership</h4>
+<pre>allow update: if isSelf(uid)
+              &amp;&amp; onlyChanges(['displayName','headline','bio',
+                              'location','photoURL','updatedAt']);</pre>
+<p>Only the owner may write, and only presentation fields. <code>email</code> and <code>uid</code>
+are absent from the allow-list and therefore immutable from the client.</p>
+
+<h4>Counter integrity</h4>
+<pre>allow update: if isSignedIn()
+              &amp;&amp; onlyChanges(['likeCount'])
+              &amp;&amp; ( request.resource.data.likeCount == resource.data.likeCount + 1
+                || request.resource.data.likeCount == resource.data.likeCount - 1 );</pre>
+<p>Non-authors must be able to like a post, so the rule restricts <i>magnitude</i> rather than
+<i>access</i>.</p>
+
+<h4>Connection acceptance</h4>
+<pre>allow update: if isSignedIn()
+              &amp;&amp; request.auth.uid == resource.data.recipientId
+              &amp;&amp; resource.data.status == 'pending'
+              &amp;&amp; request.resource.data.status == 'accepted'
+              &amp;&amp; onlyChanges(['status','updatedAt']);</pre>
+<p>Four simultaneous conditions; a requester cannot accept their own request.</p>
+
+<h4>Notification authenticity</h4>
+<pre>allow create: if isSignedIn()
+              &amp;&amp; request.resource.data.actorId == request.auth.uid
+              &amp;&amp; request.resource.data.recipientId == uid
+              &amp;&amp; request.resource.data.read == false;</pre>
+<p>Cross-user writes are permitted but must be attributed truthfully.</p>
+
+<h3>11.3 Storage rules</h3>
+<pre>match /users/{uid}/{fileName} {
+  allow read:  if isSignedIn();
+  allow write: if isSelf(uid) &amp;&amp; isImage() &amp;&amp; isReasonableSize();
+}</pre>
+<p>Every writable path is prefixed with the uploader's UID, reducing folder isolation to a single
+comparison. Uploads must match <code>image/*</code> and be under 5 MB.</p>
+
+<h3>11.4 Secret management</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Handling</th></tr>
+<tr><td>Firebase client config</td><td>In <code>.env</code>, injected via <code>EXPO_PUBLIC_*</code>. <b>Public by design</b> — an identifier, not a credential.</td></tr>
+<tr><td><code>.env</code></td><td>Git-ignored. Template <code>.env.example</code> holds placeholders only.</td></tr>
+<tr><td>Service-account keys</td><td><b>Not present.</b> No Admin SDK. Blocked by <code>.gitignore</code>.</td></tr>
+<tr><td>Signing keystores</td><td>Blocked by <code>.gitignore</code> (<code>*.jks</code>, <code>*.keystore</code>, <code>*.p8</code>, <code>*.p12</code>, <code>*.key</code>, <code>*.pem</code>).</td></tr>
+</table></div>
+<p>A mobile application cannot hold a secret — any embedded value can be extracted from the bundle.
+The architecture therefore assumes the client is untrusted and places all trust decisions in the
+security rules.</p>
+
+<h3>11.5 Known limitations</h3>
+<ol>
+<li><b>Counter manipulation is limited, not prevented.</b> A user could repeat a permitted ±1 write.
+Full prevention requires a Cloud Function (Blaze plan).</li>
+<li><b>All content is visible to all members.</b> Intended for a network application, but there is no
+private content tier.</li>
+<li><b>Registration is open.</b> Anyone with the application can create an account.</li>
+<li><b>Post deletion uses a client-side loop</b> and could be interrupted for a very large post.</li>
+<li><b>17 moderate npm advisories</b>, all transitive (<code>decode-uri-component</code>,
+<code>uuid</code>) via Expo and React Navigation. No clean remediation exists — versions are pinned
+upstream and <code>npm audit fix --force</code> would break SDK alignment. Neither advisory is
+reachable through Linkora's usage.</li>
+</ol>
+
+<!-- 12 -->
+<h2 id="s12"><span class="num">12.</span>UI / UX — screens</h2>
+
+<h3>12.1 Verified screenshots</h3>
+<p>The two images below are <b>genuine screenshots of the application running.</b> They were
+captured from the web build (<code>npx expo export --platform web</code>, rendered through
+<code>react-native-web</code>) using a temporary throwaway Firebase configuration. The transition
+from Login to Register was performed by an automated click through the Chrome DevTools Protocol, and
+the browser console reported <b>zero errors or exceptions</b> throughout.</p>
+
+<div class="shots">
+  <figure><img src="screenshots/01-login-real.png" alt="Real screenshot of the Login screen"><figcaption>Login — real render</figcaption></figure>
+  <figure><img src="screenshots/02-register-real.png" alt="Real screenshot of the Register screen"><figcaption>Register — real render</figcaption></figure>
+</div>
+
+<div class="keybox"><h4>What this evidences</h4>
+<p>All of the following is platform-independent and therefore transferable to a device: successful
+application boot, the environment guard accepting a valid configuration, Firebase SDK initialisation,
+<code>AuthContext</code> resolving its loading state, React Navigation performing a screen
+transition, and correct rendering of both authentication screens.</p></div>
+
+<div class="warnbox"><b>What it does not evidence.</b> The capture is the <b>web</b> render via
+<code>react-native-web</code>, not a physical device. Three code paths are platform-specific and were
+not exercised.</div>
+
+<div class="tw"><table>
+<tr><th>Unexercised path</th><th>Location</th><th>Failure symptom on a device</th></tr>
+<tr><td><code>getReactNativePersistence(AsyncStorage)</code></td><td><code>src/firebase/app.ts</code></td><td>Session does not survive an app restart</td></tr>
+<tr><td><code>expo-image-picker</code> native module</td><td><code>CreatePostScreen</code>, <code>EditProfileScreen</code></td><td>Gallery does not open, or no permission prompt</td></tr>
+<tr><td><code>fetch('file://…')</code> → <code>Blob</code></td><td><code>src/services/storage.service.ts</code></td><td>Upload fails after an image is selected</td></tr>
+</table></div>
+
+<p>Real authentication and all Firestore reads and writes also remain unevidenced, as they require
+live credentials and published security rules. The Android bundle compiles successfully (903
+modules), but compilation is not execution.</p>
+
+<h3>12.2 Interface mockups</h3>
+<div class="warnbox"><b>Statement of accuracy.</b> The images below are <b>mockups, not
+screenshots.</b> The signed-in screens require an authenticated account against live Firebase
+credentials, so they could not be captured. Each mockup is drawn directly from the design tokens in
+<code>src/theme/index.ts</code> and from each screen's <code>StyleSheet</code>, so colours, spacing,
+control shapes and label text correspond to the implemented code. They are presented as design
+references, not as evidence of a running build.</div>
+
+<div class="shots">
+  <figure><img src="mockups/01-login.svg" alt="Login screen mockup"><figcaption>Login</figcaption></figure>
+  <figure><img src="mockups/02-register.svg" alt="Register screen mockup"><figcaption>Register</figcaption></figure>
+  <figure><img src="mockups/03-home-feed.svg" alt="Home feed mockup"><figcaption>Home feed</figcaption></figure>
+  <figure><img src="mockups/04-post-detail.svg" alt="Post detail mockup"><figcaption>Post &amp; comments</figcaption></figure>
+  <figure><img src="mockups/05-network.svg" alt="Network screen mockup"><figcaption>My network</figcaption></figure>
+  <figure><img src="mockups/06-notifications.svg" alt="Notifications mockup"><figcaption>Notifications</figcaption></figure>
+  <figure><img src="mockups/07-profile.svg" alt="Profile mockup"><figcaption>Profile</figcaption></figure>
+  <figure><img src="mockups/08-create-post.svg" alt="Create post mockup"><figcaption>Create post</figcaption></figure>
+  <figure><img src="mockups/09-settings.svg" alt="Settings mockup"><figcaption>Settings</figcaption></figure>
+</div>
+
+<div class="keybox"><h4>Design language</h4>
+<p>A single token file (<code>src/theme/index.ts</code>) defines the palette — primary
+<code>#0A66C2</code>, background <code>#F4F2EE</code>, surface <code>#FFFFFF</code>, border
+<code>#E3E1DD</code>, text <code>#1D1D1B</code> — together with a spacing scale, corner radii and font
+sizes. Every screen imports from it, which is why the mockups above can be generated from the source
+with confidence.</p></div>
+
+<h3>12.3 Screen inventory</h3>
+<h4>Signed out</h4>
+<div class="tw"><table>
+<tr><th>Screen</th><th>File</th><th>Purpose</th><th>Actions</th><th>Data source</th></tr>
+<tr><td>Login</td><td><code>auth/LoginScreen.tsx</code></td><td>Sign in</td><td>Sign in, reset password, go to Register</td><td>Firebase Auth</td></tr>
+<tr><td>Register</td><td><code>auth/RegisterScreen.tsx</code></td><td>Create account</td><td>Create account, return to Login</td><td>Auth + Firestore</td></tr>
+</table></div>
+<h4>Signed in — tabs</h4>
+<div class="tw"><table>
+<tr><th>Screen</th><th>File</th><th>Purpose</th><th>Actions</th><th>Data source</th></tr>
+<tr><td>Home</td><td><code>HomeScreen.tsx</code></td><td>Realtime feed</td><td>Like, comment, open author, delete own post, new post</td><td><code>subscribeToFeed()</code></td></tr>
+<tr><td>Network</td><td><code>NetworkScreen.tsx</code></td><td>People and invitations</td><td>Connect, accept, decline, remove</td><td><code>listOtherUsers()</code>, <code>subscribeToMyConnections()</code></td></tr>
+<tr><td>Notifications</td><td><code>NotificationsScreen.tsx</code></td><td>Activity list</td><td>Open target, mark all read</td><td><code>subscribeToNotifications()</code></td></tr>
+<tr><td>Profile</td><td><code>ProfileScreen.tsx</code></td><td>Own profile and posts</td><td>Edit profile, settings</td><td><code>useAuth()</code>, <code>subscribeToUserPosts()</code></td></tr>
+</table></div>
+<h4>Signed in — stack</h4>
+<div class="tw"><table>
+<tr><th>Screen</th><th>File</th><th>Purpose</th><th>Actions</th><th>Data source</th></tr>
+<tr><td>Create post</td><td><code>CreatePostScreen.tsx</code></td><td>Compose</td><td>Attach/remove image, publish</td><td><code>createPost()</code>, <code>uploadPostImage()</code></td></tr>
+<tr><td>Post detail</td><td><code>PostDetailScreen.tsx</code></td><td>Post + comments</td><td>Add comment, delete own comment</td><td><code>getPost()</code>, <code>subscribeToComments()</code></td></tr>
+<tr><td>Edit profile</td><td><code>EditProfileScreen.tsx</code></td><td>Edit own profile</td><td>Change photo, save</td><td><code>updateUserProfile()</code>, <code>uploadAvatar()</code></td></tr>
+<tr><td>User profile</td><td><code>UserProfileScreen.tsx</code></td><td>Another member</td><td>Connect, accept, remove</td><td><code>getUserProfile()</code>, <code>subscribeToUserPosts()</code></td></tr>
+<tr><td>Settings</td><td><code>SettingsScreen.tsx</code></td><td>Account and backend info</td><td>Sign out</td><td><code>useAuth()</code>, <code>firebaseConfig</code></td></tr>
+</table></div>
+<div class="keybox"><h4>Notable UX decision — the Settings backend card</h4>
+<p>Settings displays the live Firebase project ID, auth domain and storage bucket. This turns the
+isolation guarantee into something verifiable on the device itself rather than a claim in
+documentation.</p></div>
+
+<!-- 13 -->
+<h2 id="s13"><span class="num">13.</span>Firebase services used</h2>
+<p>Linkora consumes <b>no REST APIs</b>. All backend interaction is through the Firebase SDK.</p>
+<h3>Authentication</h3>
+<div class="tw"><table>
+<tr><th>SDK function</th><th>Purpose</th></tr>
+<tr><td><code>createUserWithEmailAndPassword</code></td><td>Registration</td></tr>
+<tr><td><code>signInWithEmailAndPassword</code></td><td>Login</td></tr>
+<tr><td><code>signOut</code></td><td>Logout</td></tr>
+<tr><td><code>updateProfile</code></td><td>Set display name on the Auth record</td></tr>
+<tr><td><code>sendPasswordResetEmail</code></td><td>Password reset</td></tr>
+<tr><td><code>onAuthStateChanged</code></td><td>Session state listener</td></tr>
+<tr><td><code>initializeAuth</code> / <code>getAuth</code></td><td>Instance creation with persistence</td></tr>
+</table></div>
+<h3>Cloud Firestore</h3>
+<div class="tw"><table>
+<tr><th>SDK function</th><th>Purpose</th></tr>
+<tr><td><code>collection</code>, <code>doc</code></td><td>Path references</td></tr>
+<tr><td><code>getDoc</code>, <code>getDocs</code></td><td>One-off reads</td></tr>
+<tr><td><code>onSnapshot</code></td><td>Realtime listeners (6 sites)</td></tr>
+<tr><td><code>setDoc</code></td><td>Write with a chosen ID (users, likes, connections)</td></tr>
+<tr><td><code>addDoc</code></td><td>Write with a generated ID (posts, comments, notifications)</td></tr>
+<tr><td><code>updateDoc</code></td><td>Partial update</td></tr>
+<tr><td><code>deleteDoc</code></td><td>Delete</td></tr>
+<tr><td><code>writeBatch</code></td><td>Atomic multi-write (like / unlike)</td></tr>
+<tr><td><code>increment</code></td><td>Atomic counter</td></tr>
+<tr><td><code>serverTimestamp</code></td><td>Server-side time</td></tr>
+<tr><td><code>query</code>, <code>where</code>, <code>orderBy</code>, <code>limit</code></td><td>Query construction</td></tr>
+</table></div>
+<h3>Storage</h3>
+<p><code>ref</code> · <code>uploadBytes</code> · <code>getDownloadURL</code></p>
+<h3>Cloud Messaging</h3>
+<p><span class="b b-no">NOT IMPLEMENTED</span> — no FCM code exists.
+<code>EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</code> is present because it is part of the standard
+Firebase config block, not because messaging is in use.</p>
+
+<!-- 14 -->
+<h2 id="s14"><span class="num">14.</span>Data flow</h2>
+<h3>Registration</h3>
+<div class="diagram">RegisterScreen → register()
+  → createUserWithEmailAndPassword()   Firebase Auth
+  → updateProfile({ displayName })     Firebase Auth
+  → createUserProfile() → setDoc()     Firestore users/{uid}
+  → onAuthStateChanged → AuthContext → RootNavigator → MainTabs</div>
+<h3>Create post</h3>
+<div class="diagram">CreatePostScreen
+  → (optional) uploadPostImage() → Storage → download URL
+  → createPost() → addDoc(posts)
+  → subscribeToFeed listener fires on all devices
+  → HomeScreen → FlatList → PostCard</div>
+<h3>Fetch posts</h3>
+<div class="diagram">HomeScreen useEffect
+  → subscribeToFeed()
+  → onSnapshot(posts, orderBy createdAt desc, limit 50)
+  → snapshot.docs.map(toPost) → setPosts
+  → unmount: unsubscribe()</div>
+<h3>Like</h3>
+<div class="diagram">PostCard onToggleLike
+  → optimistic setLikedIds()
+  → likePost()
+      → writeBatch: set(likes/{uid}) + update(likeCount +1) → commit()
+      → createNotification('like')
+  → feed listener pushes the new count
+  → on failure: state rolled back, ErrorBanner shown</div>
+<h3>Connection</h3>
+<div class="diagram">NetworkScreen "Connect" → sendConnectionRequest()
+  → setDoc(connections/{sortedPair}, 'pending') → notification
+  → recipient's subscribeToMyConnections fires
+  → "Accept" → acceptConnectionRequest() → updateDoc('accepted') → notification</div>
+<h3>Image upload</h3>
+<div class="diagram">requestMediaLibraryPermissionsAsync()
+  → launchImageLibraryAsync({ quality: 0.7 })
+  → file:// URI
+  → fetch(uri).blob()          device-local read, NOT a network request
+  → uploadBytes(ref(...))      Firebase Storage
+  → getDownloadURL()
+  → URL saved into the Firestore document</div>
+
+<!-- 15 -->
+<h2 id="s15"><span class="num">15.</span>Testing</h2>
+<div class="warnbox"><b>Accuracy statement.</b> This section reports only what was actually
+executed. Items marked <span class="b b-pend">PENDING</span> have not been run.</div>
+
+<h3>15.1 Automated verification — <span class="b b-ok">PERFORMED</span></h3>
+<div class="tw"><table>
+<tr><th>Check</th><th>Command</th><th>Result</th></tr>
+<tr><td>TypeScript compilation</td><td><code>npm run typecheck</code></td><td><b>Pass</b> — zero errors</td></tr>
+<tr><td>Metro production bundle (Android)</td><td><code>npm run bundle-check</code></td><td><b>Pass</b> — 903 modules, no resolution errors</td></tr>
+<tr><td>Dependency audit</td><td><code>npm audit</code></td><td>17 moderate, 0 high, 0 critical — all transitive</td></tr>
+</table></div>
+
+<h3>15.2 Static and bundle analysis — <span class="b b-ok">PERFORMED</span></h3>
+<div class="tw"><table>
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td>Network entry points (<code>fetch</code>, <code>axios</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>)</td><td><b>1 result</b> — local <code>file://</code> read in <code>storage.service.ts</code></td></tr>
+<tr><td>Hardcoded URLs / IPs in source</td><td>Only documentation links; no live endpoints</td></tr>
+<tr><td>Private IP literals in compiled bundle</td><td><b>None</b></td></tr>
+<tr><td>Database drivers (MongoDB, MySQL, PostgreSQL, Redis, MSSQL, Oracle)</td><td><b>None</b></td></tr>
+<tr><td>Directory / SSO clients (LDAP, Kerberos, SAML)</td><td><b>None</b></td></tr>
+<tr><td>Telemetry SDKs (Sentry, Segment, Amplitude, Mixpanel, Bugsnag, Datadog)</td><td><b>None</b></td></tr>
+<tr><td>Embedded private keys</td><td><b>None</b></td></tr>
+<tr><td>Admin SDK / service accounts</td><td><b>None</b></td></tr>
+<tr><td>Outbound hostnames in compiled bundle</td><td>Only Google Firebase endpoints</td></tr>
+</table></div>
+
+<h3>15.3 Runtime boot test — <span class="b b-ok">PERFORMED</span></h3>
+<p>The application was executed as a web build with a temporary throwaway Firebase configuration and
+driven automatically through the Chrome DevTools Protocol.</p>
+<div class="tw"><table>
+<tr><th>Check</th><th>Method</th><th>Result</th></tr>
+<tr><td>Application boots</td><td>Load exported web bundle</td><td><b>Pass</b> — renders within 3 s</td></tr>
+<tr><td>Environment guard accepts valid config</td><td><code>.env</code> with correct <code>projectId</code></td><td><b>Pass</b> — no error thrown</td></tr>
+<tr><td>Firebase SDK initialises</td><td><code>initializeApp</code> in <code>src/firebase/app.ts</code></td><td><b>Pass</b> — no exception</td></tr>
+<tr><td><code>AuthContext</code> resolves loading state</td><td><code>onAuthStateChanged</code> fires</td><td><b>Pass</b> — Login replaces the splash spinner</td></tr>
+<tr><td>Login screen renders</td><td>DOM text assertion</td><td><b>Pass</b> — all fields and buttons present</td></tr>
+<tr><td>Navigation works</td><td>Automated click on "Create a new account"</td><td><b>Pass</b> — Register screen rendered</td></tr>
+<tr><td>Register screen renders</td><td>DOM text assertion</td><td><b>Pass</b> — all four fields present</td></tr>
+<tr><td>Console errors / exceptions</td><td>CDP <code>Runtime.exceptionThrown</code></td><td><b>Zero</b></td></tr>
+</table></div>
+<p>Additionally, <code>onAuthStateChanged</code> was probed directly in Node with a deliberately
+invalid API key and fired in <b>1 ms</b> with <code>user = null</code>, confirming the auth listener
+resolves even when the backend is unreachable.</p>
+
+<h3>15.4 Functional testing — <span class="b b-pend">PENDING</span></h3>
+<p>Testing against live data requires real Firebase credentials and completed console setup, which
+were not performed. <b>No end-to-end functional test has been executed.</b> The list below is the
+intended plan, not a record of results.</p>
+<pre>[ ] Registration creates an Auth user and users/{uid}
+[ ] Login and logout
+[ ] Session persists across app restart
+[ ] Password reset email delivered
+[ ] Profile edit persists
+[ ] Avatar upload appears in Storage
+[ ] Post creation (text, and text + image)
+[ ] Feed updates in realtime on a second device
+[ ] Like increments and de-duplicates; unlike decrements
+[ ] Comment adds and increments counter
+[ ] Comment deletion by author and by post owner
+[ ] Post deletion removes subcollections
+[ ] Connection request, accept, remove
+[ ] Notifications generated for all four types; no self-notification</pre>
+
+<h3>15.5 Security-rule testing — <span class="b b-pend">PENDING</span></h3>
+<p>Planned via <b>Firebase Console → Firestore → Rules Playground</b>:</p>
+<pre>[ ] Unauthenticated read of users/{uid}           expect DENY
+[ ] Authenticated read of another user's profile  expect ALLOW
+[ ] Write to another user's profile               expect DENY
+[ ] Write email field on own profile              expect DENY
+[ ] likeCount change of +1                        expect ALLOW
+[ ] likeCount change of +50                       expect DENY
+[ ] Create like with another user's UID as docId  expect DENY
+[ ] Requester accepting own request               expect DENY
+[ ] Notification with forged actorId              expect DENY
+[ ] Any read of jobs / conversations              expect DENY</pre>
+
+<h3>15.6 Isolation testing — partially performed</h3>
+<div class="tw"><table>
+<tr><th>Test</th><th>Status</th></tr>
+<tr><td>Source and bundle scan for organisational references</td><td><span class="b b-ok">PERFORMED — CLEAN</span></td></tr>
+<tr><td>Verification that only Firebase endpoints appear in the bundle</td><td><span class="b b-ok">PERFORMED — CONFIRMED</span></td></tr>
+<tr><td>Run on personal Wi-Fi with organisational network unreachable</td><td><span class="b b-pend">PENDING</span></td></tr>
+<tr><td>Run with VPN disconnected</td><td><span class="b b-pend">PENDING</span></td></tr>
+</table></div>
+
+<!-- 16 -->
+<h2 id="s16"><span class="num">16.</span>Error handling</h2>
+<h3>Strategy — three layers</h3>
+<ol>
+<li><b>Client validation</b> — immediate feedback before a network call (<code>looksLikeEmail()</code>,
+password length, matching passwords, non-empty post).</li>
+<li><b>Service-layer propagation</b> — services do not swallow errors; they let them reach the caller.</li>
+<li><b>Screen-level presentation</b> — screens catch, translate via <code>describeError()</code>, and
+render <code>&lt;ErrorBanner /&gt;</code>.</li>
+</ol>
+<h3>Translation examples</h3>
+<div class="tw"><table>
+<tr><th>Code</th><th>Message shown</th></tr>
+<tr><td><code>auth/email-already-in-use</code></td><td>That email address already has a Linkora account. Try signing in.</td></tr>
+<tr><td><code>auth/invalid-credential</code></td><td>Wrong email or password.</td></tr>
+<tr><td><code>auth/network-request-failed</code></td><td>Could not reach Firebase. Check that this device has internet access.</td></tr>
+<tr><td><code>permission-denied</code></td><td>Firestore refused this operation. Your security rules do not allow it…</td></tr>
+<tr><td><code>failed-precondition</code></td><td>Firestore needs an index for this query. Open the link in the terminal error.</td></tr>
+<tr><td><code>storage/unauthorized</code></td><td>Firebase Storage refused this upload…</td></tr>
+</table></div>
+<p>Unmapped errors fall back to the raw message, then to a generic sentence — the user never sees a
+bare error code.</p>
+<h3>Deliberate non-failures</h3>
+<div class="tw"><table>
+<tr><th>Operation</th><th>Rationale</th></tr>
+<tr><td><code>getLikedPostIds()</code> in <code>HomeScreen</code></td><td>A failure only means heart icons are not pre-filled. It must not break the feed.</td></tr>
+<tr><td><code>markNotificationRead()</code> on tap</td><td>Navigation should proceed even if the read flag fails to write.</td></tr>
+</table></div>
+<p>Both are commented in the source to record the intent.</p>
+<h3>Offline behaviour</h3>
+<p>Firestore's local cache serves recently-read data and queues writes for replay.
+<code>unavailable</code> and <code>auth/network-request-failed</code> have explicit user-facing
+messages. The application does not crash and does not discard user input.</p>
+
+<!-- 17 -->
+<h2 id="s17"><span class="num">17.</span>Performance</h2>
+<div class="tw"><table>
+<tr><th>Technique</th><th>Implementation</th><th>Effect</th></tr>
+<tr><td>Denormalisation</td><td>Author data copied onto each post</td><td>50-post feed is 1 query, not 51</td></tr>
+<tr><td>Query limits</td><td><code>limit(50)</code> on feed, user posts, notifications</td><td>Bounded read cost and memory</td></tr>
+<tr><td>List virtualisation</td><td><code>FlatList</code> throughout</td><td>Only visible rows rendered</td></tr>
+<tr><td>Atomic increments</td><td><code>increment()</code> not read-modify-write</td><td>Removes a round trip and a race</td></tr>
+<tr><td>Batched writes</td><td><code>writeBatch</code> for like + counter</td><td>One round trip instead of two</td></tr>
+<tr><td>Optimistic UI</td><td>Like state updates before the write completes</td><td>Perceived latency ≈ 0</td></tr>
+<tr><td>Deterministic IDs</td><td>Likes by UID, connections by sorted pair</td><td>Eliminates pre-write queries</td></tr>
+<tr><td>Listener cleanup</td><td>Every <code>useEffect</code> returns its unsubscribe</td><td>Prevents leaks and billed reads</td></tr>
+<tr><td>Image compression</td><td><code>quality: 0.7</code> in the picker</td><td>Smaller uploads, faster feed</td></tr>
+<tr><td>Memoisation</td><td><code>useMemo</code> / <code>useCallback</code></td><td>Avoids recomputation per render</td></tr>
+<tr><td>Composite index</td><td><code>authorId</code> + <code>createdAt</code></td><td>Server-side filtered sort</td></tr>
+<tr><td>Single Firebase init</td><td><code>getApps().length &gt; 0 ? getApp() : …</code></td><td>No duplicate instances under fast refresh</td></tr>
+</table></div>
+<p><b>Measured artefact.</b> The Android production bundle is 3.7 MB (Hermes bytecode) across 903
+modules.</p>
+
+<!-- 18 -->
+<h2 id="s18"><span class="num">18.</span>Security &amp; privacy — infrastructure independence</h2>
+<div class="keybox"><h4>Statement</h4>
+<p>Linkora is a personal application. It operates exclusively on the personal Firebase project
+<b><code>linkora-a274a</code></b> and is designed so that it <b>does not require or depend on
+organisational servers, databases, APIs, VPN, credentials or network infrastructure</b>.</p></div>
+
+<h3>Enforcement in code</h3>
+<div class="tw"><table>
+<tr><th>Control</th><th>Location</th><th>Effect</th></tr>
+<tr><td>Single network entry point</td><td><code>src/firebase/app.ts</code></td><td>Only file that opens a backend connection</td></tr>
+<tr><td>No HTTP client</td><td>Whole project</td><td>No <code>axios</code>; exactly one <code>fetch</code>, reading a local <code>file://</code> image</td></tr>
+<tr><td>Project allow-list</td><td><code>config/env.ts → ALLOWED_FIREBASE_PROJECT_ID</code></td><td>Application throws and halts if <code>.env</code> names any other project</td></tr>
+<tr><td>Placeholder rejection</td><td><code>config/env.ts → required()</code></td><td>Refuses to start on unconfigured values</td></tr>
+<tr><td>On-device disclosure</td><td><code>SettingsScreen</code></td><td>Displays live project ID, auth domain, storage bucket</td></tr>
+<tr><td>Secret exclusion</td><td><code>.gitignore</code></td><td>Blocks <code>.env</code>, service-account JSON, keystores, certificates</td></tr>
+<tr><td>No Admin SDK</td><td>Dependency tree</td><td>No privileged credential can exist in the client</td></tr>
+</table></div>
+
+<h3>External network dependencies — complete list</h3>
+<div class="tw"><table>
+<tr><th>Service</th><th>Domain</th><th>Purpose</th><th>Ownership</th><th>Runtime?</th></tr>
+<tr><td>Firebase Authentication</td><td><code>identitytoolkit.googleapis.com</code></td><td>Sign-in, registration, reset</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>Firebase token refresh</td><td><code>securetoken.googleapis.com</code></td><td>Session token renewal</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>Cloud Firestore</td><td><code>firestore.googleapis.com</code></td><td>All application data</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>Firebase Storage (write)</td><td><code>firebasestorage.googleapis.com</code></td><td>Image upload</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>Firebase Storage (read)</td><td><code>storage.googleapis.com</code></td><td>Image download</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>Firebase auth domain</td><td><code>linkora-a274a.firebaseapp.com</code></td><td>Auth handler</td><td>Personal</td><td>Yes</td></tr>
+<tr><td>npm registry</td><td><code>registry.npmjs.org</code></td><td>Dependency installation</td><td>Public</td><td><b>No</b> — build only</td></tr>
+<tr><td>Expo dev server</td><td>Local machine, port 8081</td><td>Code delivery to Expo Go</td><td>Local</td><td><b>No</b> — development only</td></tr>
+</table></div>
+<p style="font-size:16px"><b>Organisational infrastructure referenced: none.</b></p>
+
+<div class="warnbox"><b>Caveat on verification scope.</b> The scans above cover source code,
+configuration and the compiled Android bundle. They do <b>not</b> constitute a runtime network
+capture. A definitive runtime verification would require running the configured application behind a
+network monitor, which has not been performed. The static and bundle-level evidence is strong but is
+not a substitute for that test.</div>
+
+<!-- 19 -->
+<h2 id="s19"><span class="num">19.</span>Installation guide</h2>
+<div class="tw"><table>
+<tr><th>Requirement</th><th>Necessity</th><th>Verify with</th></tr>
+<tr><td>Node.js 20+</td><td>Required</td><td><code>node --version</code></td></tr>
+<tr><td>npm</td><td>Required</td><td><code>npm --version</code></td></tr>
+<tr><td>Expo Go on a phone</td><td>Required</td><td>Play Store / App Store</td></tr>
+<tr><td>Personal Google account</td><td>Required</td><td>—</td></tr>
+<tr><td>Git</td><td>Recommended</td><td><code>git --version</code></td></tr>
+<tr><td>Android Studio / JDK / Xcode</td><td><b>Not required</b></td><td>—</td></tr>
+</table></div>
+<h3>Steps</h3>
+<pre>cd C:\Users\IT\Documents\Linkora
+npm install
+Copy-Item .env.example .env      # then fill in the Firebase values
+npm run typecheck</pre>
+<h3>Firebase console setup</h3>
+<ol>
+<li><b>Project settings → Your apps →</b> register a <b>Web</b> app (the JS SDK requires a Web app
+even on mobile). Copy the config into <code>.env</code>.</li>
+<li><b>Build → Authentication → Sign-in method →</b> enable <b>Email/Password</b>.</li>
+<li><b>Build → Firestore Database →</b> create in <b>production mode</b>.</li>
+<li><b>Build → Storage →</b> enable in <b>production mode</b>; copy the bucket into <code>.env</code>.</li>
+<li><b>Firestore → Rules →</b> paste <code>firestore.rules</code>, publish.</li>
+<li><b>Storage → Rules →</b> paste <code>storage.rules</code>, publish.</li>
+<li>Create the composite index via <code>firebase deploy --only firestore:indexes</code> or the link
+in the runtime error.</li>
+</ol>
+<blockquote><p><code>google-services.json</code> and <code>GoogleService-Info.plist</code> are
+<b>not required</b>. The JS SDK uses the Web app configuration on all platforms.</p></blockquote>
+
+<!-- 20 -->
+<h2 id="s20"><span class="num">20.</span>Running the application</h2>
+<div class="tw"><table>
+<tr><th>Command</th><th>Purpose</th></tr>
+<tr><td><code>npm start</code></td><td>Start the Expo development server</td></tr>
+<tr><td><code>npm run android</code></td><td>Open on a connected Android device or emulator</td></tr>
+<tr><td><code>npm run ios</code></td><td>Open in the iOS simulator (macOS only)</td></tr>
+<tr><td><code>npm run web</code></td><td>Open in a browser</td></tr>
+<tr><td><code>npm run typecheck</code></td><td>TypeScript check</td></tr>
+<tr><td><code>npm run bundle-check</code></td><td>Produce a production bundle</td></tr>
+<tr><td><code>npx expo start --clear</code></td><td>Start with cleared cache (required after editing <code>.env</code>)</td></tr>
+<tr><td><code>npx expo start --tunnel</code></td><td>Tunnel mode when the local network blocks device-to-device traffic</td></tr>
+</table></div>
+<p><b>On a physical device:</b> run <code>npm start</code>, connect the phone to the same Wi-Fi, and
+scan the QR code with Expo Go (Android) or the Camera app (iOS).</p>
+<div class="warnbox"><b>Version control note.</b> This project is <b>not currently a Git
+repository</b> — Git is not installed on the development machine. When initialising it, use a personal
+Git identity and a private personal remote, and confirm <code>.env</code> is absent from
+<code>git status --porcelain</code> before the first commit.</div>
+
+<!-- 21 -->
+<h2 id="s21"><span class="num">21.</span>Deployment</h2>
+<p>Linkora has no server component. Deployment consists of publishing security rules and distributing
+the application binary.</p>
+<h3>Rules deployment</h3>
+<pre>npm install -g firebase-tools
+firebase login
+firebase use linkora-a274a
+firebase deploy --only firestore:rules,firestore:indexes,storage</pre>
+<p>Rules must be deployed <b>before</b> distributing an application version that depends on them.</p>
+<h3>Android — cloud build</h3>
+<pre>npm install -g eas-cli
+eas login
+eas build:configure
+eas build --platform android --profile preview   # APK
+eas build --platform android                     # AAB for Play Store</pre>
+<blockquote><p>EAS Build uploads source to Expo's servers — the only third-party service in this
+project's lifecycle. For a personal project with no embedded secrets the exposure is low, but it
+should be a conscious choice. <code>EXPO_PUBLIC_*</code> variables must be configured in
+<code>eas.json</code> or the EAS dashboard, as the build server has no access to the local
+<code>.env</code>.</p></blockquote>
+<h3>Android — local build</h3>
+<p>Requires JDK 17 and Android Studio, neither installed on the development machine:</p>
+<pre>npx expo prebuild --platform android
+cd android
+./gradlew assembleRelease     # APK
+./gradlew bundleRelease       # AAB</pre>
+<p>A release keystore is required and must be backed up outside version control — losing it prevents
+publishing further updates to the same application identity.</p>
+<h3>iOS</h3>
+<p><code>eas build --platform ios</code> requires a paid Apple Developer account (USD 99/year). For
+personal use, Expo Go on a physical iPhone is sufficient.</p>
+
+<!-- 22 -->
+<h2 id="s22"><span class="num">22.</span>Future enhancements</h2>
+<blockquote><p>These are <b>proposals</b>, not implemented functionality.</p></blockquote>
+<h3>Completing the designed model</h3>
+<div class="tw"><table>
+<tr><th>Enhancement</th><th>Notes</th></tr>
+<tr><td>Direct messaging</td><td><code>conversations/{id}/messages/{id}</code> with a <code>members</code> array, mirroring the connections pattern. Rule placeholders already exist.</td></tr>
+<tr><td>Jobs and applications</td><td><code>jobs</code>, <code>companies</code>, <code>applications</code> collections. Rule placeholders already exist.</td></tr>
+<tr><td>Push notifications</td><td>Requires a development build plus <code>expo-notifications</code> and a Cloud Function to dispatch messages.</td></tr>
+<tr><td>Search</td><td><code>findUserByEmail()</code> already exists and needs only a UI. Substring search would require an external index.</td></tr>
+<tr><td>Post editing / account deletion</td><td>Both already permitted by the rules; only UI is missing.</td></tr>
+</table></div>
+<h3>Engineering improvements</h3>
+<div class="tw"><table>
+<tr><th>Enhancement</th><th>Rationale</th></tr>
+<tr><td>Automated tests</td><td><code>jest-expo</code> + <code>@testing-library/react-native</code>; rules tests via the Firebase emulator</td></tr>
+<tr><td>Cloud Functions</td><td>Server-authoritative counters, cascading deletes, notification fan-out</td></tr>
+<tr><td>Pagination</td><td>Cursor-based infinite scroll to replace the fixed <code>limit(50)</code></td></tr>
+<tr><td>Image caching</td><td><code>expo-image</code> for disk caching and progressive loading</td></tr>
+<tr><td>Offline indicator</td><td>Explicit UI state for queued writes</td></tr>
+<tr><td>CI pipeline</td><td>Automated <code>typecheck</code> and <code>bundle-check</code> on every commit</td></tr>
+</table></div>
+<h3>Product ideas</h3>
+<p>Advanced job recommendations · improved search ranking · profile verification · AI-assisted career
+guidance · richer notification preferences · usage analytics on personally-owned infrastructure.</p>
+
+<!-- 23 -->
+<h2 id="s23"><span class="num">23.</span>Conclusion</h2>
+<p>Linkora demonstrates that a functional, secure, cross-platform social application can be built
+without operating any server infrastructure. By using Firebase as a serverless backend and enforcing
+authorisation through server-side security rules, the project achieves a security posture that does
+not depend on the client being trustworthy — a property a naive client-validated design cannot claim.</p>
+<p>The implemented feature set — authentication, profiles, a realtime feed, posts with images, likes,
+comments, connections and notifications — covers the core interaction loop of a professional network.
+Features that were designed but not built are documented as such throughout, and their Firestore
+collections are explicitly denied in the security rules so that incomplete work cannot become an
+unsecured surface.</p>
+<p>The architectural constraint that shaped this project most is infrastructure independence.
+Confining all network access to a single module, hardcoding a project allow-list that halts the
+application on mismatch, and surfacing the live backend identity on the Settings screen together turn
+a policy statement into a verifiable property. Static analysis of both source and the compiled bundle
+confirms that the application's only network destinations are the Firebase endpoints of one
+personally-owned project.</p>
+<p>The principal limitations are honest ones: no automated test suite, counter integrity that is
+bounded rather than guaranteed without Cloud Functions, and several designed features still
+unimplemented. Each is documented with the specific work required to address it.</p>
+
+<!-- 24 -->
+<h2 id="s24"><span class="num">24.</span>Viva / presentation questions</h2>
+
+<div class="q"><div class="qq"><span>Q1.</span>What is React Native?</div>
+A framework for building mobile applications in JavaScript or TypeScript that render as genuine
+native platform widgets, rather than as a web page inside a wrapper. One codebase targets both
+Android and iOS.</div>
+
+<div class="q"><div class="qq"><span>Q2.</span>Why did you choose React Native?</div>
+A single codebase for both platforms, a large ecosystem, and — combined with Expo — the ability to
+develop and run on a physical device without Android Studio, Xcode or a JDK. The development machine
+used for this project has none of those installed.</div>
+
+<div class="q"><div class="qq"><span>Q3.</span>What is Expo and why use it?</div>
+A toolchain and runtime around React Native. Expo Go loads the application over Wi-Fi from the
+development server, removing the entire native build setup. The trade-off is that native-only
+modules — including Firebase Cloud Messaging — are unavailable, which is directly why push
+notifications are not implemented.</div>
+
+<div class="q"><div class="qq"><span>Q4.</span>Why Firebase?</div>
+It provides authentication, a realtime database and file storage as managed services, with
+authorisation enforced server-side by security rules. This removes the need to write, host and secure
+a backend, while still keeping trust decisions off the client.</div>
+
+<div class="q"><div class="qq"><span>Q5.</span>What is Firestore?</div>
+A NoSQL document database. Data is stored as documents containing fields, grouped into collections,
+which may in turn contain subcollections. It supports realtime listeners that push changes to
+connected clients.</div>
+
+<div class="q"><div class="qq"><span>Q6.</span>How does authentication work in your app?</div>
+Firebase Authentication with email and password — <code>createUserWithEmailAndPassword</code> and
+<code>signInWithEmailAndPassword</code> in <code>src/services/auth.service.ts</code>. Google stores
+the password hash; the application never sees or stores a password. The returned ID token is
+persisted to AsyncStorage and attached to every subsequent request, which is what populates
+<code>request.auth</code> in the rules.</div>
+
+<div class="q"><div class="qq"><span>Q7.</span>How does your app store data?</div>
+In Cloud Firestore: <code>users</code>, <code>posts</code> (with <code>likes</code> and
+<code>comments</code> subcollections), <code>connections</code>, and <code>notifications</code> as a
+subcollection of <code>users</code>. Images live in Firebase Storage and are referenced from
+Firestore by download URL.</div>
+
+<div class="q"><div class="qq"><span>Q8.</span>How do users connect?</div>
+A document at <code>connections/{id}</code> where the ID is the two user IDs sorted and joined with an
+underscore. The requester creates it with status <code>pending</code>; only the recipient may change
+it to <code>accepted</code>. The deterministic ID makes duplicate connections structurally
+impossible.</div>
+
+<div class="q"><div class="qq"><span>Q9.</span>How does messaging work?</div>
+<b>It is not implemented.</b> There is no messaging screen, service or route. The
+<code>conversations</code> and <code>messages</code> collections exist in the planned data model and
+are explicitly denied in the security rules so the unbuilt feature cannot become an unsecured
+collection.</div>
+
+<div class="q"><div class="qq"><span>Q10.</span>How do Security Rules work?</div>
+They are a declarative policy evaluated on Google's servers for every request. Because they are not
+part of the application, they apply even to a modified client or a direct API call. Linkora denies
+everything by default, requires authentication throughout, compares <code>request.auth.uid</code>
+against the target document, and restricts which fields — and for counters, which values — a write may
+produce.</div>
+
+<div class="q"><div class="qq"><span>Q11.</span>How is the application secured?</div>
+Four layers. Authentication is required for every operation. Ownership is enforced by comparing the
+caller's UID to the document. Field-level rules limit even permitted writes. And the signed-out UI
+never mounts the signed-in screens. The first three are server-enforced and cannot be bypassed by
+editing the app.</div>
+
+<div class="q"><div class="qq"><span>Q12.</span>Is your Firebase API key exposed? Is that a problem?</div>
+It is embedded in the bundle, and that is expected. Firebase client configuration is a public project
+identifier, comparable to a postal address — it grants no access by itself. Access is decided entirely
+by the security rules. The <code>EXPO_PUBLIC_</code> prefix exists precisely to signal that the value
+is visible. Genuine secrets, such as service-account keys, are never placed in a mobile application
+because any embedded value can be extracted.</div>
+
+<div class="q"><div class="qq"><span>Q13.</span>How does your app handle errors?</div>
+<code>src/utils/errors.ts</code> translates Firebase error codes into actionable sentences; screens
+catch errors and render a consistent <code>ErrorBanner</code>. Listeners receive an
+<code>onError</code> callback. Two operations deliberately swallow errors — pre-filling like icons and
+marking a notification read on tap — because failing loudly there would degrade the experience more
+than failing silently.</div>
+
+<div class="q"><div class="qq"><span>Q14.</span>How does your application communicate with Firebase?</div>
+Through the Firebase JS SDK only. There is no REST API and no custom endpoint. Screens call service
+functions, services use the SDK, and the SDK issues authenticated HTTPS requests — all flowing through
+one initialisation module, <code>src/firebase/app.ts</code>.</div>
+
+<div class="q"><div class="qq"><span>Q15.</span>Why didn't you use a traditional backend?</div>
+A conventional API tier exists mainly to hold credentials and enforce authorisation away from the
+client. Firebase Security Rules perform that authorisation on Google's servers. A middle tier would
+add hosting cost, deployment work and another attack surface without adding a guarantee the rules do
+not already provide. The genuine limitation is that server-authoritative logic — such as tamper-proof
+counters — would require Cloud Functions.</div>
+
+<div class="q"><div class="qq"><span>Q16.</span>What are the limitations of your project?</div>
+No messaging, jobs or push notifications. No automated tests. Like and comment counters are bounded to
+±1 per write but not fully tamper-proof without Cloud Functions. All content is visible to all
+signed-in members. Registration is open. Post deletion iterates subcollections from the client and
+could be interrupted for a very large post.</div>
+
+<div class="q"><div class="qq"><span>Q17.</span>What would you improve in future?</div>
+Implement messaging and jobs using the collection placeholders already reserved in the rules; add
+Cloud Functions for authoritative counters and cascading deletes; add a test suite with the Firebase
+emulator; replace the fixed feed limit with cursor pagination; and migrate to a development build to
+enable push notifications.</div>
+
+<div class="q"><div class="qq"><span>Q18.</span>What is the difference between <code>addDoc</code> and <code>setDoc</code>?</div>
+<code>addDoc</code> lets Firestore generate the document ID, used for posts, comments and
+notifications where the ID carries no meaning. <code>setDoc</code> is used where the ID <i>is</i>
+meaningful and enforces uniqueness — likes keyed by the liker's UID, and connections keyed by the
+sorted user pair.</div>
+
+<div class="q"><div class="qq"><span>Q19.</span>Why <code>serverTimestamp()</code> rather than <code>new Date()</code>?</div>
+So ordering uses Google's clock rather than the device's. A phone with an incorrect date could
+otherwise pin its post permanently to the top of the feed. A consequence is that
+<code>createdAt</code> is briefly <code>null</code> in the local snapshot before the server value
+arrives, which is why <code>timeAgo()</code> returns "just now" for a null value.</div>
+
+<div class="q"><div class="qq"><span>Q20.</span>What is a <code>writeBatch</code> and why is it necessary?</div>
+It groups writes so they succeed or fail together. Liking a post writes two documents — the like and
+the incremented counter. Without a batch, one could succeed while the other failed, leaving
+<code>likeCount</code> permanently wrong.</div>
+
+<div class="q"><div class="qq"><span>Q21.</span>How do you prevent a user liking a post twice?</div>
+The like document's ID is the liker's UID: <code>posts/{postId}/likes/{uid}</code>. A second like
+overwrites the same document, so duplication is structurally impossible. It also reduces the rule to a
+single identity comparison and removes the need for a check query before writing.</div>
+
+<div class="q"><div class="qq"><span>Q22.</span>How do you know the app only talks to your own Firebase project?</div>
+Four ways. All network access is confined to <code>src/firebase/app.ts</code>.
+<code>assertPersonalFirebaseProject()</code> halts the application if <code>.env</code> names any
+project other than <code>linkora-a274a</code>. The Settings screen displays the live project ID on the
+device. And extracting hostnames from the compiled Android bundle returns only Google's Firebase
+endpoints.</div>
+
+<div class="q"><div class="qq"><span>Q23.</span>What did you actually test, and what did you not?</div>
+<b>Verified by execution:</b> TypeScript compiles with zero errors; the Android bundle builds
+successfully (903 modules); the dependency audit shows 17 moderate transitive advisories and no high
+or critical ones; and static plus bundle analysis found no organisational infrastructure, no database
+drivers, no telemetry SDKs and no embedded keys. <b>Not yet performed:</b> functional testing on a
+device and security-rule simulation, both of which require a configured <code>.env</code> and
+completed Firebase console setup.</div>
+
+</div><!-- /pad -->
+
+<div class="foot">
+<b>LINKORA</b> · Version 1.0.0 · 5 September 2026<br>
+Firebase project <code>linkora-a274a</code> · React Native 0.86.3 · Expo SDK 57.0.20<br><br>
+<i>This document describes the project as implemented. Features not built are marked
+<b>NOT IMPLEMENTED</b> rather than described.</i>
+</div>
+
+</div><!-- /sheet -->
+
+<button class="printbtn noprint" onclick="window.print()">🖨 Print / Save as PDF</button>
+</body>
+</html>
+

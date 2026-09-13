@@ -1,0 +1,80 @@
+# =============================================================================
+# Linkora .gitignore
+#
+# The "Secrets" block below is the important one. Everything in it either
+# contains credentials or is machine-specific. If you are unsure whether a file
+# belongs in Git, assume it does not.
+# =============================================================================
+
+# --- Dependencies ------------------------------------------------------------
+node_modules/
+
+# --- Expo / build output -----------------------------------------------------
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+
+# --- Generated native folders ------------------------------------------------
+# Recreated by `npx expo prebuild`, so they do not belong in Git.
+/ios
+/android
+.kotlin/
+*.orig.*
+
+# --- Metro / debug logs ------------------------------------------------------
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# =============================================================================
+# SECRETS — never commit anything matched below
+# =============================================================================
+
+# Environment files with real values.
+# `.env.example` is force-allowed at the end of this file because it holds only
+# placeholders and is the template you copy from.
+.env
+.env.*
+
+# Firebase service-account keys. These grant FULL admin access to the project
+# and bypass every security rule. They belong on a server, never in a mobile
+# app and never in Git.
+serviceAccount*.json
+service-account*.json
+firebase-adminsdk*.json
+*-firebase-adminsdk-*.json
+
+# Firebase client config files, if you ever run `expo prebuild`. Not strictly
+# secret, but ignoring them keeps the repo portable across machines.
+google-services.json
+GoogleService-Info.plist
+
+# Signing keys and certificates — losing control of these means somebody else
+# can publish an update to your app.
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.cer
+*.mobileprovision
+
+# Local Firebase CLI state.
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# --- Editor / OS -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# --- Force-allow the safe template ------------------------------------------
+# This must stay last: it re-includes .env.example after the `.env.*` rule above.
+!.env.example

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 660" width="320" height="660" role="img" aria-label="Linkora Network screen mockup">
+<title>Linkora — My network (mockup)</title>
+<style>
+text{font-family:'Segoe UI',-apple-system,Roboto,Helvetica,Arial,sans-serif}
+.t9{font-size:9px}.t10{font-size:10px}.t11{font-size:11px}.t12{font-size:12px}.t13{font-size:13px}.t15{font-size:15px}.t22{font-size:22px}
+.b{font-weight:700}.b8{font-weight:800}.sb{font-weight:600}
+.mu{fill:#5E5E5C}.tx{fill:#1D1D1B}.pri{fill:#0A66C2}.dg{fill:#B42318}
+</style>
+<rect x="0.5" y="0.5" width="319" height="659" rx="22" fill="#F4F2EE" stroke="#D9D6D1"/>
+<text x="18" y="24" class="t10 mu sb">9:41</text>
+<text x="302" y="24" class="t10 mu" text-anchor="end">▮▮▮ ⌁ ▰</text>
+
+<path d="M1 34 h318 v46 h-318 z" fill="#fff"/>
+<line x1="1" y1="80" x2="319" y2="80" stroke="#E3E1DD"/>
+<text x="16" y="64" class="t22 b8 tx">My network</text>
+
+<text x="16" y="104" class="t11 b mu">INVITATIONS (1)</text>
+
+<!-- invitation row -->
+<rect x="14" y="114" width="292" height="66" rx="10" fill="#fff" stroke="#E3E1DD"/>
+<circle cx="42" cy="147" r="20" fill="#0A66C2"/>
+<text x="42" y="154" class="t15 b" fill="#fff" text-anchor="middle">RM</text>
+<text x="72" y="142" class="t13 b tx">Ravi Menon</text>
+<text x="72" y="158" class="t12 mu">wants to connect</text>
+<rect x="216" y="126" width="74" height="30" rx="15" fill="#0A66C2"/>
+<text x="253" y="146" class="t12 b" fill="#fff" text-anchor="middle">Accept</text>
+<text x="253" y="170" class="t10 b dg" text-anchor="middle">Decline</text>
+
+<text x="16" y="212" class="t11 b mu">PEOPLE ON LINKORA</text>
+
+<!-- person 1 -->
+<rect x="14" y="222" width="292" height="62" rx="10" fill="#fff" stroke="#E3E1DD"/>
+<circle cx="42" cy="253" r="20" fill="#0A66C2"/>
+<text x="42" y="260" class="t15 b" fill="#fff" text-anchor="middle">AK</text>
+<text x="72" y="248" class="t13 b tx">Arun Kumar</text>
+<text x="72" y="264" class="t12 mu">Backend engineer</text>
+<rect x="212" y="238" width="78" height="30" rx="15" fill="none" stroke="#0A66C2" stroke-width="1.5"/>
+<text x="251" y="258" class="t12 b pri" text-anchor="middle">Connect</text>
+
+<!-- person 2 -->
+<rect x="14" y="292" width="292" height="62" rx="10" fill="#fff" stroke="#E3E1DD"/>
+<circle cx="42" cy="323" r="20" fill="#0A66C2"/>
+<text x="42" y="330" class="t15 b" fill="#fff" text-anchor="middle">PS</text>
+<text x="72" y="318" class="t13 b tx">Priya Sharma</text>
+<text x="72" y="334" class="t12 mu">Frontend developer · React Native</text>
+<text x="290" y="328" class="t10 b mu" text-anchor="end">Connected · Remove</text>
+
+<!-- person 3 -->
+<rect x="14" y="362" width="292" height="62" rx="10" fill="#fff" stroke="#E3E1DD"/>
+<circle cx="42" cy="393" r="20" fill="#0A66C2"/>
+<text x="42" y="400" class="t15 b" fill="#fff" text-anchor="middle">SN</text>
+<text x="72" y="388" class="t13 b tx">Sneha Nair</text>
+<text x="72" y="404" class="t12 mu">UI designer</text>
+<text x="290" y="398" class="t10 b mu" text-anchor="end">Request sent</text>
+
+<!-- person 4 -->
+<rect x="14" y="432" width="292" height="62" rx="10" fill="#fff" stroke="#E3E1DD"/>
+<circle cx="42" cy="463" r="20" fill="#0A66C2"/>
+<text x="42" y="470" class="t15 b" fill="#fff" text-anchor="middle">VG</text>
+<text x="72" y="458" class="t13 b tx">Vikram Gupta</text>
+<text x="72" y="474" class="t12 mu">Data analyst</text>
+<rect x="212" y="448" width="78" height="30" rx="15" fill="none" stroke="#0A66C2" stroke-width="1.5"/>
+<text x="251" y="468" class="t12 b pri" text-anchor="middle">Connect</text>
+
+<!-- tab bar -->
+<path d="M1 604 h318 v34 a22 22 0 0 1 -22 22 h-274 a22 22 0 0 1 -22 -22 z" fill="#fff"/>
+<line x1="1" y1="604" x2="319" y2="604" stroke="#E3E1DD"/>
+<text x="52" y="628" class="t15" text-anchor="middle">🏠</text>
+<text x="52" y="646" class="t9 mu" text-anchor="middle">Home</text>
+<text x="124" y="628" class="t15" text-anchor="middle">👥</text>
+<text x="124" y="646" class="t9 pri sb" text-anchor="middle">Network</text>
+<text x="196" y="628" class="t15" text-anchor="middle">🔔</text>
+<text x="196" y="646" class="t9 mu" text-anchor="middle">Alerts</text>
+<text x="268" y="628" class="t15" text-anchor="middle">👤</text>
+<text x="268" y="646" class="t9 mu" text-anchor="middle">Profile</text>
+</svg>
